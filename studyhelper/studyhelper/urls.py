@@ -19,13 +19,13 @@ from django.contrib import admin
 from django.urls import path, include
 
 from quiz import views as quiz_views
-from django.urls import handler404, handler500
+from django.conf.urls import handler404, handler500
 from django.conf import settings
 from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('/', include('quiz.urls')),
+    path('', include('quiz.urls')),
 ]
 
 handler404 = quiz_views.error_404

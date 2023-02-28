@@ -108,7 +108,7 @@ def logout_view(request):
     return redirect('/')
 
 
-def error_404(request):
+def error_404(request, exception):
     data = {}
     return render(request, 'quiz/error_404.html', data)
 
