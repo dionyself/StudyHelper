@@ -47,13 +47,22 @@ class Choice(TimeStampedModel):
 class QuizProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
+    course = models.ForeignKey(Course, null=True, blank=True, related_name='profiles', on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return f'<QuizProfile: user={self.user}>'
 
     def get_new_question(self):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=self).values_list('question__pk', flat=True)
-        remaining_questions = Question.objects.exclude(pk__in=used_questions_pk)
+        
+        if self.course:
+            remaining_questions = self.course.questions.exclude(pk__in=used_questions_pk)
+        elif self.tags.all():
+            remaining_questions = Question.objects.filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
+        else:
+            remaining_questions = Question.objects.exclude(pk__in=used_questions_pk)
+
         if not remaining_questions.exists():
             return
         return random.choice(remaining_questions)

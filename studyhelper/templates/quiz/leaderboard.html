@@ -8,6 +8,8 @@
             <tr>
                 <th>Position</th>
                 <th>Username</th>
+                <th>Course</th>
+                <th>Tags</th>
                 <th>Score</th>
             </tr>
         </thead>
@@ -16,6 +18,16 @@
             <tr>
                 <td>{{ forloop.counter }}</td>
                 <td>{{ quiz_profile.user.username }}</td>
+                <td>
+                    {% if quiz_profile.course and quiz_profile.course.name %}
+                        {{ quiz_profile.course.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for tag in quiz_profile.tags.all %}
+                        <li>{{ tag.name }}</li>
+                    {% endfor %}
+                </td>
                 <td>{{ quiz_profile.total_score }}</td>
             </tr>
             {% endfor %}
