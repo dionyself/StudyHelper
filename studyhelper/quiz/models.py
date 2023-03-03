@@ -5,12 +5,29 @@ from django.utils.translation import gettext as _
 from model_utils.models import TimeStampedModel
 
 
+
+
+class Tag(TimeStampedModel):
+    name = models.TextField(_('Tag Name'), unique=True)
+    def __str__(self):
+        return self.name
+
+class Course(TimeStampedModel):
+    name = models.TextField(_('Course Name'), unique=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    provider = models.TextField(_('Provider Name'), unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Question(TimeStampedModel):
     ALLOWED_NUMBER_OF_CORRECT_CHOICES = 1
 
     html = models.TextField(_('Question Text'))
     is_published = models.BooleanField(_('Has been published?'), default=False, null=False)
     maximum_marks = models.DecimalField(_('Maximum Marks'), default=4, decimal_places=2, max_digits=6)
+    courses = models.ManyToManyField(Course, blank=True)
+    tags = models.ManyToManyField(Tag, blank=True)
 
     def __str__(self):
         return self.html

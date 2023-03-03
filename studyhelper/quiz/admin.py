@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import Question, Choice
+from .models import Question, Choice, Tag, Course
 from .forms import QuestionForm, ChoiceForm, ChoiceInlineFormset
 # Register your models here.
 
@@ -18,7 +18,7 @@ class QuestionAdmin(admin.ModelAdmin):
     model = Question
     inlines = (ChoiceInline, )
     list_display = ['html', 'is_published']
-    list_filter = ['is_published']
+    list_filter = ['tags', 'courses', 'is_published']
     search_fields = ['html', 'choices__html']
     actions = None
     form = QuestionForm
@@ -33,3 +33,6 @@ class QuestionAdmin(admin.ModelAdmin):
 
 
 admin.site.register(Question, QuestionAdmin)
+admin.site.register(Tag)
+admin.site.register(Course)
+

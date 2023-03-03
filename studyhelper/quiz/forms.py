@@ -2,13 +2,13 @@ from django import forms
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth import authenticate, get_user_model
 from django.utils.translation import gettext as _
-from .models import Question, Choice
+from .models import Question, Choice, Tag, Course
 
 
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['html', 'is_published']
+        fields = ['html', 'tags', 'courses', 'is_published']
         widgets = {
             'html': forms.Textarea(attrs={'rows': 3, 'cols': 80}),
         }
