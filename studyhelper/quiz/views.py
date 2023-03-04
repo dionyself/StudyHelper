@@ -3,18 +3,24 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from .models import QuizProfile, Question, AttemptedQuestion
+from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag
 from .forms import UserLoginForm, RegistrationForm
 
 
 def home(request):
-    context = {}
+    context = {
+        'courses': Course.objects.all(),
+        'tags': Tag.objects.all(),
+    }
     return render(request, 'quiz/home.html', context=context)
 
 
 @login_required()
 def user_home(request):
-    context = {}
+    context = {
+        'courses': Course.objects.all(),
+        'tags': Tag.objects.all(),
+    }
     return render(request, 'quiz/user_home.html', context=context)
 
 
@@ -31,7 +37,29 @@ def leaderboard(request):
 
 @login_required()
 def play(request):
+
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
+    course = request.GET.get('course')
+    tags = request.GET.getlist('tags')
+    paranms = {}
+    if course == "0":
+        quiz_profile.course = None
+        quiz_profile.save()
+        if tags:
+            if "0" in tags:
+                quiz_profile.tags.clear()
+            else:
+                quiz_profile.tags.clear()
+                quiz_profile.tags.set([Tag.objects.get(pk=tag_id) for tag_id in tags])
+    elif course:
+        quiz_profile.course = Course.objects.get(pk=course)
+        quiz_profile.save()
+    elif not quiz_profile.course and tags:
+        if "0" in tags:
+            quiz_profile.tags.clear()
+        else:
+            quiz_profile.tags.clear()
+            quiz_profile.tags.set([Tag.objects.get(pk=tag_id) for tag_id in tags])
 
     if request.method == 'POST':
         question_pk = request.POST.get('question_pk')
@@ -64,7 +92,9 @@ def play(request):
 def reset(request):
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
     quiz_profile.attempts.all().delete()
-    return redirect('/play')
+    quiz_profile.total_score = 0
+    quiz_profile.save()
+    return redirect('/')
 
 
 @login_required()

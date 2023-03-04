@@ -57,7 +57,7 @@ class QuizProfile(TimeStampedModel):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=self).values_list('question__pk', flat=True)
         
         if self.course:
-            remaining_questions = self.course.questions.exclude(pk__in=used_questions_pk)
+            remaining_questions = self.course.question_set.exclude(pk__in=used_questions_pk)
         elif self.tags.all():
             remaining_questions = Question.objects.filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
         else:
