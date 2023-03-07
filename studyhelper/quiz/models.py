@@ -111,7 +111,6 @@ class QuizProfile(TimeStampedModel):
                     is_correct = False
                     break
 
-        print(is_correct, selected_choice_pks, incorrect_choice_pks, correct_choice_pks)
         attempted_question.is_correct = is_correct
         if is_correct is True:
             attempted_question.marks_obtained = attempted_question.question.maximum_marks

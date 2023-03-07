@@ -68,13 +68,12 @@ def play(request):
         attempted_question = quiz_profile.attempts.select_related('question').get(question__pk=question_pk)
 
         choice_pks = request.POST.getlist('choice_pk')
-        print(choice_pks)
 
         try:
             selected_choices = attempted_question.question.choices.filter(pk__in=choice_pks)
         except ObjectDoesNotExist:
             raise Http404
-        print(selected_choices)
+
         quiz_profile.evaluate_attempt(attempted_question, selected_choices)
 
         return redirect(attempted_question)
