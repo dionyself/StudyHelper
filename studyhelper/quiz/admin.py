@@ -7,9 +7,9 @@ from .forms import QuestionForm, ChoiceForm, ChoiceInlineFormset
 
 class ChoiceInline(admin.TabularInline):
     model = Choice
-    can_delete = False
+    can_delete = True
     max_num = Choice.MAX_CHOICES_COUNT
-    min_num = Choice.MAX_CHOICES_COUNT
+    min_num = Choice.MIN_CHOICES_COUNT
     form = ChoiceForm
     formset = ChoiceInlineFormset
 

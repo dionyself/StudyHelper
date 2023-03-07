@@ -17,7 +17,7 @@ class QuestionForm(forms.ModelForm):
 class ChoiceForm(forms.ModelForm):
     class Meta:
         model = Choice
-        fields = ['html', 'is_correct']
+        fields = ['html', 'reason', 'is_correct']
         widgets = {
             'html': forms.Textarea(attrs={'rows': 2, 'cols': 80}),
         }
@@ -36,9 +36,9 @@ class ChoiceInlineFormset(forms.BaseInlineFormSet):
                 correct_choices_count += 1
 
         try:
-            assert correct_choices_count == Question.ALLOWED_NUMBER_OF_CORRECT_CHOICES
+            assert correct_choices_count <= Question.ALLOWED_NUMBER_OF_CORRECT_CHOICES
         except AssertionError:
-            raise forms.ValidationError(_('Exactly one correct choice is allowed.'))
+            raise forms.ValidationError(_(f'No more than {Question.ALLOWED_NUMBER_OF_CORRECT_CHOICES} correct choices are allowed.'))
 
 
 User = get_user_model()

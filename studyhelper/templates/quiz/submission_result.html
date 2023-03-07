@@ -8,13 +8,55 @@
 
 		<p>
 		    <strong>Your answer: </strong>
-		    {{ attempted_question.selected_choice.html|safe }}
+			<form class="form">
+			{% for ordered_pk in offered_pks %}
+				{% for offered_choice in attempted_question.offered_choices.all %}
+					{% if ordered_pk == offered_choice.pk %}
+						<div class="form-check mx-4">
+						{% if offered_choice.is_correct %}
+							{% if ordered_pk in selected_pks %}
+								<input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ ordered_pk }}" disabled checked>
+								<span>&#x2705;</span>
+								<label class="form-check-label" for="choice-{{ ordered_pk }}">
+							  		{{ offered_choice.html|safe }}
+								</label>
+								<span> -> It's correct because: {{ offered_choice.reason }}</span>
+							{% else %}
+								<input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ ordered_pk }}" disabled>
+								<span>&#10060;</span>
+								<label class="form-check-label" for="choice-{{ ordered_pk }}">
+									{{ offered_choice.html|safe }}
+								</label>
+								<span> -> You should select this. It's correct because: {{ offered_choice.reason }}</span>
+							{% endif %}
+						{% else %}
+							{% if ordered_pk in selected_pks %}
+								<input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ ordered_pk }}" disabled checked>
+								<span>&#10060;</span>
+								<label class="form-check-label" for="choice-{{ ordered_pk }}">
+									{{ offered_choice.html|safe }}
+								</label>
+								<span> -> You shouldn't select this. It's incorrect because: {{ offered_choice.reason }}</span>
+							{% else %}
+								<input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ ordered_pk }}" disabled>
+								<span>&#x2705;</span>
+								<label class="form-check-label" for="choice-{{ ordered_pk }}">
+									{{ offered_choice.html|safe }}
+								</label>
+								<span> -> It's incorrect because: {{ offered_choice.reason }}</span>
+							{% endif %}
+						{% endif %}
+						</div>
+					{% endif %}
+				{% endfor %}
+			{% endfor %}
+			</form>
 		</p>
 
-		{% if attempted_question.selected_choice.is_correct %}
+		{% if attempted_question.is_correct %}
 		<h4 class="text-success">Yayy!! Your answer is correct. High Five! 🙌</h4>
 		{% else %}
-		<h4 class="text-danger">Your answer is incorrect 😟</h4>
+		<h4 class="text-danger">Your answer is incorrect 😟, all your choices need to be correct.</h4>
 		{% endif %}
 
 		<a class="btn btn-info" href="{% url 'quiz:play' %}">Show next question</a>
@@ -22,3 +64,18 @@
 </div>
 
 {% endblock content %}
+
+<form class="form" action="" method="post">
+	{% csrf_token %}
+	<input type="hidden" name="question_pk" value="{{ question.pk }}">
+	{% for choice in choices %}
+	  <div class="form-check mx-4">
+		<input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ forloop.counter }}" value="{{ choice.pk }}">
+		<label class="form-check-label" for="choice-{{ forloop.counter }}">
+		  {{ choice.html|safe }}
+		</label>
+	  </div>
+
+	{% endfor %}
+	<input class="btn btn-info btn-lg" type="submit" value="Submit">  
+</form>

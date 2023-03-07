@@ -1,3 +1,4 @@
+import random
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
@@ -66,24 +67,27 @@ def play(request):
 
         attempted_question = quiz_profile.attempts.select_related('question').get(question__pk=question_pk)
 
-        choice_pk = request.POST.get('choice_pk')
+        choice_pks = request.POST.getlist('choice_pk')
+        print(choice_pks)
 
         try:
-            selected_choice = attempted_question.question.choices.get(pk=choice_pk)
+            selected_choices = attempted_question.question.choices.filter(pk__in=choice_pks)
         except ObjectDoesNotExist:
             raise Http404
-
-        quiz_profile.evaluate_attempt(attempted_question, selected_choice)
+        print(selected_choices)
+        quiz_profile.evaluate_attempt(attempted_question, selected_choices)
 
         return redirect(attempted_question)
 
     else:
         question = quiz_profile.get_new_question()
+        choices = []
         if question is not None:
-            quiz_profile.create_attempt(question)
+            choices = quiz_profile.create_attempt(question)
 
         context = {
             'question': question,
+            'choices': choices, #TODO: Take all correct answers + incorrects
         }
 
         return render(request, 'quiz/play.html', context=context)
@@ -100,8 +104,13 @@ def reset(request):
 @login_required()
 def submission_result(request, attempted_question_pk):
     attempted_question = get_object_or_404(AttemptedQuestion, pk=attempted_question_pk)
+    selected_pks = [ selected.id for selected in attempted_question.selected_choices.all() ]
+    offered_pks = [int(id) for id in attempted_question.offered_choices_order.split()]
     context = {
         'attempted_question': attempted_question,
+        'selected_pks': selected_pks,
+        'non_selected_pks': [ non_sec for non_sec in offered_pks if (non_sec not in selected_pks) ],
+        'offered_pks': offered_pks
     }
 
     return render(request, 'quiz/submission_result.html', context=context)
