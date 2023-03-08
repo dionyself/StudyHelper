@@ -15,7 +15,7 @@ class Tag(TimeStampedModel):
 class Course(TimeStampedModel):
     name = models.TextField(_('Course Name'), unique=True)
     tags = models.ManyToManyField(Tag, blank=True)
-    provider = models.TextField(_('Provider Name'), unique=True)
+    provider = models.TextField(_('Provider Name'))
 
     def __str__(self):
         return self.name
@@ -24,7 +24,7 @@ class Question(TimeStampedModel):
     ALLOWED_NUMBER_OF_CORRECT_CHOICES = 5
     MAX_CHOICES_TO_OFFER = ALLOWED_NUMBER_OF_CORRECT_CHOICES * 3
 
-    html = models.TextField(_('Question Text'))
+    html = models.TextField(_('Question Text'), unique=True)
     is_published = models.BooleanField(_('Has been published?'), default=False, null=False)
     maximum_marks = models.DecimalField(_('Maximum Marks'), default=4, decimal_places=2, max_digits=6)
     courses = models.ManyToManyField(Course, blank=True)
@@ -40,7 +40,7 @@ class Choice(TimeStampedModel):
 
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
     is_correct = models.BooleanField(_('Is this answer correct?'), default=False, null=False)
-    html = models.TextField(_('Choice Text'))
+    html = models.TextField(_('Choice Text'), unique=True)
     reason = models.TextField(_('Choice Reason Text'))
 
     def __str__(self):
