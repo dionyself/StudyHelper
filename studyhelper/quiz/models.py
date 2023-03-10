@@ -40,11 +40,14 @@ class Choice(TimeStampedModel):
 
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
     is_correct = models.BooleanField(_('Is this answer correct?'), default=False, null=False)
-    html = models.TextField(_('Choice Text'), unique=True)
+    html = models.TextField(_('Choice Text'))
     reason = models.TextField(_('Choice Reason Text'))
 
     def __str__(self):
         return self.html
+    
+    class Meta:
+        unique_together = ('html', 'question',)
 
 
 class QuizProfile(TimeStampedModel):
