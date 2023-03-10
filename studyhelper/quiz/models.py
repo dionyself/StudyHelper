@@ -21,8 +21,9 @@ class Course(TimeStampedModel):
         return self.name
 
 class Question(TimeStampedModel):
-    ALLOWED_NUMBER_OF_CORRECT_CHOICES = 5
-    MAX_CHOICES_TO_OFFER = ALLOWED_NUMBER_OF_CORRECT_CHOICES * 3
+    MIN_NUMBER_OF_CORRECT_CHOICES = 1
+    MAX_NUMBER_OF_CORRECT_CHOICES = 5
+    MAX_CHOICES_TO_OFFER = MAX_NUMBER_OF_CORRECT_CHOICES * 3
 
     html = models.TextField(_('Question Text'), unique=True)
     is_published = models.BooleanField(_('Has been published?'), default=False, null=False)
@@ -35,13 +36,13 @@ class Question(TimeStampedModel):
 
 
 class Choice(TimeStampedModel):
-    MIN_CHOICES_COUNT = Question.ALLOWED_NUMBER_OF_CORRECT_CHOICES * 3
-    MAX_CHOICES_COUNT = MIN_CHOICES_COUNT * 5
+    MIN_CHOICES_COUNT = Question.MIN_NUMBER_OF_CORRECT_CHOICES * 3
+    MAX_CHOICES_COUNT = Question.MAX_CHOICES_TO_OFFER * 5
 
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
     is_correct = models.BooleanField(_('Is this answer correct?'), default=False, null=False)
     html = models.TextField(_('Choice Text'))
-    reason = models.TextField(_('Choice Reason Text'))
+    reason = models.TextField(_('Choice Reason Text'), blank=True, default="", null=False)
 
     def __str__(self):
         return self.html

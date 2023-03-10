@@ -1,5 +1,10 @@
 FROM python:3.11.2-alpine3.17
 
+ARG STUDY_HELPER_INITIAL_DATA="0"
+ARG STUDY_HELPER_ADMIN_USERNAME="administrator"
+ARG STUDY_HELPER_ADMIN_PASSWORD="administrator"
+ARG STUDY_HELPER_ADMIN_EMAIL="adm@localhost"
+
 ENV DJANGO_SETTINGS_MODULE studyhelper.settings
 
 USER root
@@ -7,7 +12,7 @@ USER root
 RUN apk add --no-cache git curl \
     && apk add --no-cache su-exec
 
-ENV HOME  /root
+ENV HOME /root
 
 
 RUN cd /root && git clone https://github.com/dionyself/StudyHelper.git && cd /root/StudyHelper/studyhelper && git checkout main
