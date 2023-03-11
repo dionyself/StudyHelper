@@ -10,6 +10,7 @@ ENV DJANGO_SETTINGS_MODULE studyhelper.settings
 USER root
 
 RUN apk add --no-cache git curl \
+    && apk add --no-cache bash \
     && apk add --no-cache su-exec
 
 ENV HOME /root

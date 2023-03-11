@@ -14,4 +14,4 @@ python manage.py shell -c "from django.contrib.auth.models import User; User.obj
 if [ $STUDY_HELPER_INITIAL_DATA -eq "1" ]; then
     python manage.py shell -c "from quiz.views import import_json_course; import_json_course(open('/root/StudyHelper/studyhelper/data/initial.json', 'r'))"
 fi
-python manage runserver
+python manage.py runserver
