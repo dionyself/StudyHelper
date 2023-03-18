@@ -2,8 +2,11 @@
 {% block title %} Study Helper | Submission Result {% endblock title %}
 {% block content %}
 <div class="container">
-	<div class="jumbotron my-4">
+	<div class="my-4">
+		<h5 class="text-info">Course: {{ course_name  }} - Topics: {% for tag_name in tag_names %}{{ tag_name  }} |{% endfor %}</h5>
+	</div>
 
+	<div class="jumbotron my-4">
 	   	<h3 class="text-info">{{ attempted_question.question.html|safe }}</h3>
 
 		<p>

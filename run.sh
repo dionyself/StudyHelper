@@ -1,6 +1,6 @@
 #docker build -t dionyself/study-helper:latest .
 #docker push dionyself/study-helper:latest
-#docker create --name study-helper-container -e STUDY_HELPER_INITIAL_DATA=0 -e STUDY_HELPER_ADMIN_USERNAME=administrator -e STUDY_HELPER_ADMIN_PASSWORD=administrator dionyself/study-helper:latest
+#docker run -it --rm --name study-helper-container -p 8000:8000 -e STUDY_HELPER_INITIAL_DATA=1 -e STUDY_HELPER_ADMIN_USERNAME=administrator -e STUDY_HELPER_ADMIN_PASSWORD=administrator dionyself/study-helper:latest
 #docker stop study-helper-container
 #docker start study-helper-container
 #docker rm -v study-helper-container

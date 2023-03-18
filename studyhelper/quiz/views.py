@@ -206,6 +206,8 @@ def play(request):
             choices = quiz_profile.create_attempt(question)
 
         context = {
+            'course_name': "N/A" if not quiz_profile.course else quiz_profile.course.name,
+            'tag_names': [c_tag.name for c_tag in question.tags.all()] if question else [],
             'question': question,
             'choices': choices,
         }
@@ -230,6 +232,8 @@ def submission_result(request, attempted_question_pk):
         'attempted_question': attempted_question,
         'selected_pks': selected_pks,
         'non_selected_pks': [ non_sec for non_sec in offered_pks if (non_sec not in selected_pks) ],
+        'tag_names': [c_tag.name for c_tag in attempted_question.question.tags.all()],
+        'course_name': "N/A" if not attempted_question.quiz_profile.course else attempted_question.quiz_profile.course.name,
         'offered_pks': offered_pks
     }
 
