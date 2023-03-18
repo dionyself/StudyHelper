@@ -6,19 +6,35 @@ from model_utils.models import TimeStampedModel
 
 
 
+EXPERTISE_LEVEL_CHOICES = [
+    ('NO', 'Novice'),
+    ('AB', 'Advanced Beginner'),
+    ('CO', 'Competent'),
+    ('PR', 'Proficient'),
+    ('EX', 'Expert'),
+]
+
 
 class Tag(TimeStampedModel):
     name = models.TextField(_('Tag Name'), unique=True)
     def __str__(self):
         return self.name
 
+
 class Course(TimeStampedModel):
     name = models.TextField(_('Course Name'), unique=True)
     tags = models.ManyToManyField(Tag, blank=True)
     provider = models.TextField(_('Provider Name'))
+    expertise_level = models.CharField(
+        max_length=2,
+        choices=EXPERTISE_LEVEL_CHOICES,
+        default="CO"
+    )
+    enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
 
     def __str__(self):
         return self.name
+
 
 class Question(TimeStampedModel):
     MIN_NUMBER_OF_CORRECT_CHOICES = 1
@@ -30,6 +46,11 @@ class Question(TimeStampedModel):
     maximum_marks = models.DecimalField(_('Maximum Marks'), default=4, decimal_places=2, max_digits=6)
     courses = models.ManyToManyField(Course, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    expertise_level = models.CharField(
+        max_length=2,
+        choices=EXPERTISE_LEVEL_CHOICES,
+        default="CO"
+    )
 
     def __str__(self):
         return self.html
@@ -56,6 +77,12 @@ class QuizProfile(TimeStampedModel):
     total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
     course = models.ForeignKey(Course, null=True, blank=True, related_name='profiles', on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
+    expertise_level = models.CharField(
+        max_length=2,
+        choices=EXPERTISE_LEVEL_CHOICES,
+        default="CO"
+    )
+    enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
 
     def __str__(self):
         return f'<QuizProfile: user={self.user}>'
@@ -129,6 +156,23 @@ class QuizProfile(TimeStampedModel):
         self.save()
 
 
+class CourseSession(TimeStampedModel):
+    is_open = models.BooleanField(_('Is this session open?'), default=False, null=False)
+    users = models.ManyToManyField(User, blank=True)
+    opens_at = models.DateTimeField()
+    closes_at = models.DateTimeField()
+    course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+    tags = models.ManyToManyField(Tag, blank=True)
+    max_n_questions = models.IntegerField(blank=True, default=0)
+    questions = models.ManyToManyField(Question, blank=True)
+    expertise_level = models.CharField(
+        max_length=2,
+        choices=EXPERTISE_LEVEL_CHOICES,
+        default="CO"
+    )
+    enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
+
+
 class AttemptedQuestion(TimeStampedModel):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     quiz_profile = models.ForeignKey(QuizProfile, on_delete=models.CASCADE, related_name='attempts')
@@ -137,6 +181,13 @@ class AttemptedQuestion(TimeStampedModel):
     offered_choices_order = models.TextField(_('Question Text'))
     is_correct = models.BooleanField(_('Was this attempt correct?'), default=False, null=False)
     marks_obtained = models.DecimalField(_('Marks Obtained'), default=0, decimal_places=2, max_digits=6)
+    session = models.ForeignKey(CourseSession, default=None, null=True, blank=True, on_delete=models.CASCADE)
 
     def get_absolute_url(self):
         return f'/submission-result/{self.pk}/'
+
+
+class SessionScore(TimeStampedModel):
+    course_session = models.ForeignKey(CourseSession, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
