@@ -18,7 +18,7 @@ class QuestionAdmin(admin.ModelAdmin):
     model = Question
     inlines = (ChoiceInline, )
     list_display = ['html', 'is_published']
-    list_filter = ['tags', 'courses', 'is_published']
+    list_filter = ['tags', 'courses', 'is_published', 'expertise_level']
     search_fields = ['html', 'choices__html']
     actions = None
     form = QuestionForm

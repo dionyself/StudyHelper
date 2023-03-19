@@ -1,5 +1,6 @@
 import json
 from datetime import datetime
+from datetime import timedelta
 from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
@@ -225,8 +226,8 @@ def play(request):
                 session_users = list(set(session_users))
             else:
                 session_users.remove(str(request.user.id))
-            session_opens_at = datetime.strptime(request.GET.get('session_opens_at'), '%Y-%m-%dT%H:%M')
-            session_closes_at = datetime.strptime(request.GET.get('session_closes_at'), '%Y-%m-%dT%H:%M')
+            session_opens_at = datetime.strptime(request.GET.get('session_opens_at') or datetime.now(), '%Y-%m-%dT%H:%M')
+            session_closes_at = datetime.strptime(request.GET.get('session_closes_at') or datetime.now() + timedelta(minutes=30), '%Y-%m-%dT%H:%M')
             session_max_n_questions = int(request.GET.get('max_n_questions', "0"))
             session_enforce_expertise_level = int(request.GET.get('session_enforce_expertise_level', "0"))
             course_session = CourseSession.objects.create(
@@ -247,9 +248,9 @@ def play(request):
         choices = []
         course_name = "N/A"
         if active_session:
-            question = active_session.get_new_question()
+            question = active_session.get_new_question(quiz_profile)
             if question is not None:
-                choices = active_session.create_attempt(question)
+                choices = active_session.create_attempt(question, quiz_profile)
             course_name = "N/A" if not active_session.course else active_session.course.name
         else:
             question = quiz_profile.get_new_question()
@@ -264,8 +265,8 @@ def play(request):
             'tag_names': [c_tag.name for c_tag in question.tags.all()] if question else [],
             'question': question,
             'choices': choices,
-            'session_duration': "",
-            'session_time_left': "",
+            'session_duration': (active_session.closes_at - active_session.opens_at) / timedelta(minutes=1) if active_session else "",
+            'session_time_left': (active_session.closes_at - datetime.now()) / timedelta(minutes=1) if active_session else "",
             'session_next': "",
         }
 

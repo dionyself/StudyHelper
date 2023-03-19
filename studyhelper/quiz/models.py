@@ -88,14 +88,20 @@ class QuizProfile(TimeStampedModel):
         return f'<QuizProfile: user={self.user}>'
 
     def get_new_question(self):
-        used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=self).values_list('question__pk', flat=True)
+        used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=self, session__isnull=True).values_list('question__pk', flat=True)
+        
+        expertise_filter = {"expertise_level": self.expertise_level}
+        expertise_filter_choices = ['NO', 'AB', 'CO', 'PR', 'EX']
+        if not self.enforce_expertise_level:
+            expertise_filter = {"expertise_level__in": expertise_filter_choices[:expertise_filter_choices.index(self.expertise_level)+1]}
+        print(expertise_filter)
         
         if self.course:
             remaining_questions = self.course.question_set.exclude(pk__in=used_questions_pk)
         elif self.tags.all():
-            remaining_questions = Question.objects.filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
+            remaining_questions = Question.objects.filter(**expertise_filter).filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
         else:
-            remaining_questions = Question.objects.exclude(pk__in=used_questions_pk)
+            remaining_questions = Question.objects.filter(**expertise_filter).exclude(pk__in=used_questions_pk)
 
         if not remaining_questions.exists():
             return
@@ -172,14 +178,83 @@ class CourseSession(TimeStampedModel):
     )
     enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
 
-    def get_new_question(self):
-        return None
+    def get_new_question(self, quiz_profile):
+        used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=quiz_profile, session=self).values_list('question__pk', flat=True)
+        if self.max_n_questions and self.max_n_questions >= len(used_questions_pk):
+            return None
+        
+        expertise_filter = {"expertise_level": self.expertise_level}
+        expertise_filter_choices = ['NO', 'AB', 'CO', 'PR', 'EX']
+        if not self.enforce_expertise_level:
+            expertise_filter = {"expertise_level__in": expertise_filter_choices[:expertise_filter_choices.index(self.expertise_level)+1]}
+
+        if self.course:
+            remaining_questions = self.course.question_set.exclude(pk__in=used_questions_pk)
+        elif self.tags.all():
+            remaining_questions = Question.objects.filter(**expertise_filter).filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
+        elif self.questions.all():
+            remaining_questions = self.questions.exclude(pk__in=used_questions_pk)
+        else:
+            remaining_questions = Question.objects.filter(**expertise_filter).exclude(pk__in=used_questions_pk)
+
+        if not remaining_questions.exists():
+            return
+        return random.choice(remaining_questions)
     
     def evaluate_attempt(self, attempted_question, selected_choices, quiz_profile):
-        return None
+        for selected_choice in selected_choices:
+            if attempted_question.question_id != selected_choice.question_id:
+                return
+
+        attempted_question.selected_choices.set(list(selected_choices))
+        selected_choice_pks = [selected_choice.pk for selected_choice in selected_choices]
+        correct_choice_pks = [offered_choice.pk for offered_choice in attempted_question.offered_choices.all() if offered_choice.is_correct]
+        incorrect_choice_pks = [offered_choice.pk for offered_choice in attempted_question.offered_choices.all() if not offered_choice.is_correct]
+        is_correct = False
+        for selected_choice_pk in selected_choice_pks:
+            if (selected_choice_pk not in incorrect_choice_pks) and (selected_choice_pk in correct_choice_pks):
+                is_correct = True
+            else:
+                is_correct = False
+                break
+        if is_correct:
+            for should_selected in correct_choice_pks:
+                if should_selected not in selected_choice_pks:
+                    is_correct = False
+                    break
+
+        attempted_question.is_correct = is_correct
+        if is_correct is True:
+            attempted_question.marks_obtained = attempted_question.question.maximum_marks
+
+        attempted_question.save()
+        self.update_score(quiz_profile)
+    
+    def update_score(self, quiz_profile):
+        marks_sum = quiz_profile.attempts.filter(session=self, is_correct=True).aggregate(
+            models.Sum('marks_obtained'))['marks_obtained__sum']
+        session_score = SessionScore.objects.get(user=quiz_profile.user, course_session=self)
+        session_score.total_score = marks_sum or 0
+        session_score.save()
 
     def create_attempt(self, question, quiz_profile):
-        return None
+        attempted_question = AttemptedQuestion(question=question, quiz_profile=quiz_profile, session=self)
+        all_choices = list(question.choices.all())
+        correct_choices = [cc for cc in all_choices if cc.is_correct]
+        incorrect_choices = [ic for ic in all_choices if not ic.is_correct]
+        random.shuffle(incorrect_choices)
+        randomized_choices = correct_choices
+        INCORRECT_CHOICES_TO_OFFER_COUNT = random.choice(list(range(2 if len(correct_choices) < 4 else 0, len(correct_choices)*3 )))
+        for _ in range(INCORRECT_CHOICES_TO_OFFER_COUNT):
+            incorrect_choice_to_offer = incorrect_choices.pop()
+            if incorrect_choice_to_offer:
+                randomized_choices.append(incorrect_choice_to_offer)
+        shuffed_choices = list(randomized_choices)
+        random.shuffle(shuffed_choices)
+        attempted_question.offered_choices_order = " ".join([str(choice.pk) for choice in shuffed_choices])
+        attempted_question.save()
+        attempted_question.offered_choices.set(randomized_choices)
+        return shuffed_choices
 
 
 class AttemptedQuestion(TimeStampedModel):

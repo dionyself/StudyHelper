@@ -8,7 +8,7 @@ from .models import Question, Choice, Tag, Course
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['html', 'tags', 'courses', 'is_published']
+        fields = ['html', 'tags', 'courses', 'is_published', 'expertise_level']
         widgets = {
             'html': forms.Textarea(attrs={'rows': 3, 'cols': 80}),
         }
