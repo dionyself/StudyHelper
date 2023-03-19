@@ -1,14 +1,16 @@
 import json
+from datetime import datetime
 from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice
+from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice, CourseSession
 from .forms import UserLoginForm, RegistrationForm
 from django.forms.models import model_to_dict
 from django.http import FileResponse
+from django.contrib.auth.models import User
 
 
 def home(request):
@@ -157,6 +159,13 @@ def _reset_profile(quiz_profile):
 @login_required()
 def play(request):
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
+    active_session = None
+    try:
+        active_session = CourseSession.objects.filter(
+            opens_at__gt=datetime.now(), closes_at__lt=datetime.now(), users__contains=request.user, is_published=True).first()
+    except:
+        pass
+
 
     if request.method == 'POST' and request.POST.get('question_pk'):
         question_pk = request.POST.get('question_pk')
@@ -169,15 +178,18 @@ def play(request):
             selected_choices = attempted_question.question.choices.filter(pk__in=choice_pks)
         except ObjectDoesNotExist:
             raise Http404
-
-        quiz_profile.evaluate_attempt(attempted_question, selected_choices)
+        if active_session:
+            active_session.evaluate_attempt(attempted_question, selected_choices, quiz_profile)
+        else:
+            quiz_profile.evaluate_attempt(attempted_question, selected_choices)
 
         return redirect(attempted_question)
     else:
         
         course = request.GET.get('course')
+        session_course = request.GET.get('session_course')
         tags = request.GET.getlist('tags')
-        paranms = {}
+
         if course == "0":
             quiz_profile.course = None
             quiz_profile = _reset_profile(quiz_profile)
@@ -198,18 +210,63 @@ def play(request):
             else:
                 quiz_profile.tags.clear()
                 quiz_profile.tags.set([Tag.objects.get(pk=tag_id) for tag_id in tags])
-            quiz_profile = _reset_profile(quiz_profile)    
+            quiz_profile = _reset_profile(quiz_profile)  
 
-        question = quiz_profile.get_new_question()
+        session_course = request.GET.get('session_course')
+        session_course = int(session_course) if session_course else None
+        session_expertise_level = request.GET.get('session_expertise_level')
+        session_questions = request.GET.getlist('session_questions')
+        if (not active_session) and (session_course or session_expertise_level or session_questions):
+            session_publish = int(request.GET.get('session_is_published', "0"))
+            session_users = request.GET.getlist('session_user')
+            session_tags = request.GET.getlist('session_tags')
+            if request.GET.get('session_include_me'):
+                session_users.append(str(request.user.id))
+                session_users = list(set(session_users))
+            else:
+                session_users.remove(str(request.user.id))
+            session_opens_at = datetime.strptime(request.GET.get('session_opens_at'), '%Y-%m-%dT%H:%M')
+            session_closes_at = datetime.strptime(request.GET.get('session_closes_at'), '%Y-%m-%dT%H:%M')
+            session_max_n_questions = int(request.GET.get('max_n_questions', "0"))
+            session_enforce_expertise_level = int(request.GET.get('session_enforce_expertise_level', "0"))
+            course_session = CourseSession.objects.create(
+                is_published=session_publish, opens_at=session_opens_at, closes_at=session_closes_at,
+                course_id=session_course, max_n_questions=session_max_n_questions, expertise_level=session_expertise_level,
+                enforce_expertise_level=session_enforce_expertise_level
+            )
+            course_session.users.add([User.objects.get(id=int(u)) for u in session_users])
+            course_session.tags.add([Tag.objects.get(id=int(t)) for t in session_tags])
+            course_session.questions.add([Question.objects.get(id=int(cs)) for cs in session_questions])
+        
+        try:
+            active_session = CourseSession.objects.filter(
+            opens_at__gt=datetime.now(), closes_at__lt=datetime.now(), users__contains=request.user, is_published=True).first()
+        except:
+            pass
+        
         choices = []
-        if question is not None:
-            choices = quiz_profile.create_attempt(question)
+        course_name = "N/A"
+        if active_session:
+            question = active_session.get_new_question()
+            if question is not None:
+                choices = active_session.create_attempt(question)
+            course_name = "N/A" if not active_session.course else active_session.course.name
+        else:
+            question = quiz_profile.get_new_question()
+            if question is not None:
+                choices = quiz_profile.create_attempt(question)
+            course_name = "N/A" if not quiz_profile.course else quiz_profile.course.name
+        
+        
 
         context = {
-            'course_name': "N/A" if not quiz_profile.course else quiz_profile.course.name,
+            'course_name': course_name,
             'tag_names': [c_tag.name for c_tag in question.tags.all()] if question else [],
             'question': question,
             'choices': choices,
+            'session_duration': "",
+            'session_time_left': "",
+            'session_next': "",
         }
 
         return render(request, 'quiz/play.html', context=context)

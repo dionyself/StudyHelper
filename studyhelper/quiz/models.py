@@ -157,7 +157,7 @@ class QuizProfile(TimeStampedModel):
 
 
 class CourseSession(TimeStampedModel):
-    is_open = models.BooleanField(_('Is this session open?'), default=False, null=False)
+    is_published = models.BooleanField(_('Is this session open?'), default=True, null=False)
     users = models.ManyToManyField(User, blank=True)
     opens_at = models.DateTimeField()
     closes_at = models.DateTimeField()
@@ -171,6 +171,15 @@ class CourseSession(TimeStampedModel):
         default="CO"
     )
     enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
+
+    def get_new_question(self):
+        return None
+    
+    def evaluate_attempt(self, attempted_question, selected_choices, quiz_profile):
+        return None
+
+    def create_attempt(self, question, quiz_profile):
+        return None
 
 
 class AttemptedQuestion(TimeStampedModel):
