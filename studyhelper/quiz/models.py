@@ -180,8 +180,8 @@ class CourseSession(TimeStampedModel):
 
     def get_new_question(self, quiz_profile):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=quiz_profile, session=self).values_list('question__pk', flat=True)
-        if self.max_n_questions and self.max_n_questions >= len(used_questions_pk):
-            session_score = SessionScore.objects.get_or_create(course_session=self, user=quiz_profile.user)
+        if self.max_n_questions and self.max_n_questions <= len(used_questions_pk):
+            session_score, _ = SessionScore.objects.get_or_create(course_session=self, user=quiz_profile.user)
             session_score.is_enabled = False
             session_score.save()
             return None

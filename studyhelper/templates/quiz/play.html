@@ -17,6 +17,14 @@
 
 <div class="container">
   <div class="my-4">
+    {% if session_duration %}
+    <h5 class="text-info">You are running a {{ session_duration }} minutes session - ( {{ session_time_left }} minutes left )</h5>
+    {% endif %}
+    {% if session_next %}
+    <h5 class="text-info">You have a pending session that will start at {{ session_next }}</h5>
+    {% endif %}
+	</div>
+  <div class="my-4">
 		<h5 class="text-info">Course: {{ course_name  }} - Topics: {% for tag_name in tag_names %}{{ tag_name  }} |{% endfor %}</h5>
 	</div>
   <div class="jumbotron my-4">

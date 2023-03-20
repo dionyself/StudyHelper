@@ -39,7 +39,12 @@ def leaderboard(request):
 
     top_quiz_profiles = QuizProfile.objects.order_by('-total_score')[:500]
     total_count = top_quiz_profiles.count()
+    session_scores = SessionScore.objects.filter(
+            is_enabled=False, course_session__is_published=True).order_by('-total_score')[:500]
+    session_total_count = session_scores.count()
     context = {
+        'session_scores': session_scores,
+        'session_total_count': session_total_count,
         'top_quiz_profiles': top_quiz_profiles,
         'total_count': total_count,
     }
@@ -158,6 +163,7 @@ def import_export(request):
 def play(request):
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
     active_session = None
+    next_session = None
     try:
 
         session_score = SessionScore.objects.filter(
@@ -177,6 +183,20 @@ def play(request):
 
     except:
         pass
+
+    if active_session:
+        next_session_score = SessionScore.objects.filter(
+            is_enabled=True, course_session__is_published=True,
+            course_session__opens_at__gt=active_session.closes_at, 
+            user=request.user).first()
+        next_session = next_session_score.course_session
+    else:
+        next_session_score = SessionScore.objects.filter(
+            is_enabled=True, course_session__is_published=True,
+            course_session__opens_at__gt=datetime.now(timezone.utc), 
+            user=request.user).first()
+        next_session = next_session_score.course_session
+
 
 
     if request.method == 'POST' and request.POST.get('question_pk'):
@@ -276,8 +296,6 @@ def play(request):
             if question is not None:
                 choices = quiz_profile.create_attempt(question)
             course_name = "N/A" if not quiz_profile.course else quiz_profile.course.name
-        
-        
 
         context = {
             'course_name': course_name,
@@ -286,7 +304,7 @@ def play(request):
             'choices': choices,
             'session_duration': (active_session.closes_at - active_session.opens_at) / timedelta(minutes=1) if active_session else "",
             'session_time_left': (active_session.closes_at - datetime.now(timezone.utc)) / timedelta(minutes=1) if active_session else "",
-            'session_next': "",
+            'session_next': next_session.opens_at if next_session else "",
         }
 
         return render(request, 'quiz/play.html', context=context)

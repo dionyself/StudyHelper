@@ -34,4 +34,41 @@
         </tbody>
     </table>
 </div>
+<div class="container">
+    <h1 class="text-center my-4"><span class="badge badge-info"><i class="fa fa-trophy" aria-hidden="true"></i> TOP {{ total_count }} SESSION PLAYERS <i class="fa fa-trophy" aria-hidden="true"></i></span></h1>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Position</th>
+                <th>Username</th>
+                <th>Started at</th>
+                <th>Ended at</th>
+                <th>Course</th>
+                <th>Tags</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for session_score in session_scores %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ session_score.user.username }}</td>
+                <td>{{ session_score.course_session.opens_at }}</td>
+                <td>{{ session_score.course_session.closes_at }}</td>
+                <td>
+                    {% if session_score.course_session and session_score.course_session.course and session_score.course_session.course.name %}
+                        {{ session_score.course_session.course.name }}
+                    {% endif %}
+                </td>
+                <td>
+                    {% for tag in session_score.course_session.tags.all %}
+                        <li>{{ tag.name }}</li>
+                    {% endfor %}
+                </td>
+                <td>{{ session_score.total_score }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock content %}
