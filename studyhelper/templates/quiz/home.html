@@ -31,7 +31,64 @@
               <option value="{{ tag.id }}">{{ tag.name }}</option>
             {% endfor %}
           </select>
+          <label for="e_override">Abandone current session:</label>
+          <input type="checkbox" id="e_override" value="1" name="abandone_session">
           <input class="btn btn-info btn-lg" type="submit" value="Let's play">  
+        </form>
+        <p class="lead">Create and Start a new session.</p>
+        <form class="form" action="{% url 'quiz:play' %}" method="get">
+          <label for="session_course_select">Choose a course:</label>
+          <select name="session_course" id="session_course_select">
+            <option selected value=""> --- </option>
+            {% for course in courses %}
+              <option value="{{ course.id }}">{{ course.name }}</option>
+            {% endfor %}
+          </select>
+          <label for="expertise_level">Expertise level:</label>
+          <select name="session_expertise_level" id="expertise_level">
+            <option value="NO">Novice</option>
+            <option value="AD">Advanced Beginner</option>
+            <option selected value="CO">Competent</option>
+            <option value="PR">Proficient</option>
+            <option value="EX">Expert</option>
+          </select>
+          <br>
+          <label for="max_n_questions">Number of questions (0-200):</label>
+          <input type="number" id="max_n_questions" value="0" name="session_max_n_questions" min="0" max="200">
+          <label for="e_expertise_level">Enforce expertise level</label>
+          <input type="checkbox" id="e_expertise_level" value="1" name="session_enforce_expertise_level">
+          <br>
+          <label for="session_questions_select">Choose questions:</label>
+          <select size="4" name="session_questions" id="session_questions_select" multiple>
+            {% for question in questions %}
+              <option value="{{ question.id }}">{{ question.html }}</option>
+            {% endfor %}
+          </select>
+          <label for="session_tag_select">Choose tags:</label>
+          <select size="4" name="session_tags" id="session_tag_select" multiple>
+            {% for tag in tags %}
+              <option value="{{ tag.id }}">{{ tag.name }}</option>
+            {% endfor %}
+          </select>
+          <label for="session_user_select">Invite users:</label>
+          <select size="4" name="session_user" id="session_user_select" multiple>
+            {% for user in users %}
+              <option value="{{ user.id }}">{{ user.username }}</option>
+            {% endfor %}
+          </select>
+          <br>
+          <label for="opens_at">Starts at:</label>
+          <input type="datetime-local" id="opens_at" name="session_opens_at">
+          <label for="closes_at">Ends at:</label>
+          <input type="datetime-local" id="closes_at" name="session_closes_at"> 
+          <br>
+          <label for="e_include_me">Include me:</label>
+          <input type="checkbox" id="e_include_me name" value="1" name="session_include_me" checked>
+
+          <label for="e_session_is_published">Publish:</label>
+          <input type="checkbox" id="e_session_is_published" value="1" name="session_is_published" checked>
+
+          <input class="btn btn-info btn-lg" type="submit" value="Start New Session">  
         </form>
         <a href="{% url 'quiz:leaderboard' %}" class="btn btn-lg btn-info mt-1">Leaderboard</a>
         {% endif %}

@@ -8,7 +8,7 @@ from model_utils.models import TimeStampedModel
 
 EXPERTISE_LEVEL_CHOICES = [
     ('NO', 'Novice'),
-    ('AB', 'Advanced Beginner'),
+    ('AD', 'Advanced Beginner'),
     ('CO', 'Competent'),
     ('PR', 'Proficient'),
     ('EX', 'Expert'),
@@ -181,6 +181,9 @@ class CourseSession(TimeStampedModel):
     def get_new_question(self, quiz_profile):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=quiz_profile, session=self).values_list('question__pk', flat=True)
         if self.max_n_questions and self.max_n_questions >= len(used_questions_pk):
+            session_score = SessionScore.objects.get_or_create(course_session=self, user=quiz_profile.user)
+            session_score.is_enabled = False
+            session_score.save()
             return None
         
         expertise_filter = {"expertise_level": self.expertise_level}
@@ -198,6 +201,9 @@ class CourseSession(TimeStampedModel):
             remaining_questions = Question.objects.filter(**expertise_filter).exclude(pk__in=used_questions_pk)
 
         if not remaining_questions.exists():
+            session_score, _ = SessionScore.objects.get_or_create(course_session=self, user=quiz_profile.user)
+            session_score.is_enabled = False
+            session_score.save()
             return
         return random.choice(remaining_questions)
     
@@ -275,3 +281,4 @@ class SessionScore(TimeStampedModel):
     course_session = models.ForeignKey(CourseSession, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
+    is_enabled = models.BooleanField(_('Is this session avalible for the user?'), default=True, null=False)

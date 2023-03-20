@@ -1,5 +1,5 @@
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 from datetime import timedelta
 from io import BytesIO
 from django.shortcuts import render, get_object_or_404, redirect
@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice, CourseSession
+from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice, CourseSession, SessionScore
 from .forms import UserLoginForm, RegistrationForm
 from django.forms.models import model_to_dict
 from django.http import FileResponse
@@ -16,6 +16,8 @@ from django.contrib.auth.models import User
 
 def home(request):
     context = {
+        'questions': Question.objects.all(),
+        'users': User.objects.all(),
         'courses': Course.objects.all(),
         'tags': Tag.objects.all(),
     }
@@ -25,6 +27,8 @@ def home(request):
 @login_required()
 def user_home(request):
     context = {
+        'questions': Question.objects.all(),
+        'users': User.objects.all(),
         'courses': Course.objects.all(),
         'tags': Tag.objects.all(),
     }
@@ -149,21 +153,28 @@ def import_export(request):
     else:
         return leaderboard(request)
 
-def _reset_profile(quiz_profile):
-    quiz_profile.attempts.all().delete()
-    quiz_profile.total_score = 0
-    return quiz_profile
-
-
-
 
 @login_required()
 def play(request):
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
     active_session = None
     try:
-        active_session = CourseSession.objects.filter(
-            opens_at__gt=datetime.now(), closes_at__lt=datetime.now(), users__contains=request.user, is_published=True).first()
+
+        session_score = SessionScore.objects.filter(
+            is_enabled=True, course_session__is_published=True,
+            course_session__opens_at__lt=datetime.now(timezone.utc), 
+            course_session__closes_at__gt=datetime.now(timezone.utc),
+            user=request.user).first()
+        
+        active_session = session_score.course_session
+        if request.GET.get("abandone_session") == "1":
+            SessionScore.objects.filter(
+                is_enabled=True, course_session__is_published=True,
+                course_session__opens_at__lt=datetime.now(timezone.utc), 
+                course_session__closes_at__gt=datetime.now(timezone.utc),
+                user=request.user).update(is_enabled=False)
+            active_session = None
+
     except:
         pass
 
@@ -171,7 +182,10 @@ def play(request):
     if request.method == 'POST' and request.POST.get('question_pk'):
         question_pk = request.POST.get('question_pk')
 
-        attempted_question = quiz_profile.attempts.select_related('question').get(question__pk=question_pk)
+        if active_session:
+            attempted_question = quiz_profile.attempts.select_related('question').get(session=active_session, question__pk=question_pk)
+        else:
+            attempted_question = quiz_profile.attempts.select_related('question').get(session__isnull=True, question__pk=question_pk)
 
         choice_pks = request.POST.getlist('choice_pk')
 
@@ -226,22 +240,27 @@ def play(request):
                 session_users = list(set(session_users))
             else:
                 session_users.remove(str(request.user.id))
-            session_opens_at = datetime.strptime(request.GET.get('session_opens_at') or datetime.now(), '%Y-%m-%dT%H:%M')
-            session_closes_at = datetime.strptime(request.GET.get('session_closes_at') or datetime.now() + timedelta(minutes=30), '%Y-%m-%dT%H:%M')
-            session_max_n_questions = int(request.GET.get('max_n_questions', "0"))
+            session_opens_at = datetime.strptime(request.GET.get('session_opens_at'), '%Y-%m-%dT%H:%M')if request.GET.get('session_opens_at') else datetime.now(timezone.utc)
+            session_closes_at = datetime.strptime(request.GET.get('session_closes_at'), '%Y-%m-%dT%H:%M') if request.GET.get('session_closes_at') else datetime.now(timezone.utc) + timedelta(minutes=30)
+            session_max_n_questions = int(request.GET.get('session_max_n_questions', "0"))
             session_enforce_expertise_level = int(request.GET.get('session_enforce_expertise_level', "0"))
             course_session = CourseSession.objects.create(
                 is_published=session_publish, opens_at=session_opens_at, closes_at=session_closes_at,
                 course_id=session_course, max_n_questions=session_max_n_questions, expertise_level=session_expertise_level,
                 enforce_expertise_level=session_enforce_expertise_level
             )
-            course_session.users.add([User.objects.get(id=int(u)) for u in session_users])
-            course_session.tags.add([Tag.objects.get(id=int(t)) for t in session_tags])
-            course_session.questions.add([Question.objects.get(id=int(cs)) for cs in session_questions])
+            course_session.users.add(*[User.objects.get(id=int(u)) for u in session_users])
+            course_session.tags.add(*[Tag.objects.get(id=int(t)) for t in session_tags])
+            course_session.questions.add(*[Question.objects.get(id=int(cs)) for cs in session_questions])
+            SessionScore.objects.create(course_session=course_session, is_enabled=True, user=quiz_profile.user)
         
         try:
-            active_session = CourseSession.objects.filter(
-            opens_at__gt=datetime.now(), closes_at__lt=datetime.now(), users__contains=request.user, is_published=True).first()
+            session_score = SessionScore.objects.filter(
+                is_enabled=True, course_session__is_published=True,
+                course_session__opens_at__lt=datetime.now(timezone.utc), 
+                course_session__closes_at__gt=datetime.now(timezone.utc),
+                user=request.user).first()
+            active_session = session_score.course_session
         except:
             pass
         
@@ -266,12 +285,17 @@ def play(request):
             'question': question,
             'choices': choices,
             'session_duration': (active_session.closes_at - active_session.opens_at) / timedelta(minutes=1) if active_session else "",
-            'session_time_left': (active_session.closes_at - datetime.now()) / timedelta(minutes=1) if active_session else "",
+            'session_time_left': (active_session.closes_at - datetime.now(timezone.utc)) / timedelta(minutes=1) if active_session else "",
             'session_next': "",
         }
 
         return render(request, 'quiz/play.html', context=context)
 
+
+def _reset_profile(quiz_profile):
+    quiz_profile.attempts.all().delete()
+    quiz_profile.total_score = 0
+    return quiz_profile
 
 @login_required()
 def reset(request):
