@@ -41,12 +41,14 @@ Features:
 ************
 Coming soon:
 ************
+- Documentation improvements
 - Backend improvements
 - UI impovements
 - Randomizer improvements
 - Exam/session results panel
 - Printer friendly exams
 - Invite non registered users to take exams
+- Unittests
 
 
 .. |bitcoin| image:: https://raw.githubusercontent.com/dionyself/golang-cms/master/static/img/btttcc.png
