@@ -11,9 +11,15 @@ Requirements
 docker
 
 **********************************
-Run it on docker using the commad:
+Run it on docker using this commad:
 **********************************
-- docker run -it --rm --name study-helper-container -p 8000:8000 -e STUDY_HELPER_INITIAL_DATA=1 -e STUDY_HELPER_ADMIN_USERNAME=administrator -e STUDY_HELPER_ADMIN_PASSWORD=administrator dionyself/study-helper:latest
+::
+
+   docker run -it --rm --name study-helper-container -p 8000:8000 \
+     -e STUDY_HELPER_INITIAL_DATA=1 \
+     -e STUDY_HELPER_ADMIN_USERNAME=administrator \
+     -e STUDY_HELPER_ADMIN_PASSWORD=administrator \
+     dionyself/study-helper:latest
 
 
 Login to 127.0.0.1:8000/
