@@ -2,7 +2,7 @@
 StudyHelper
 ###########
 
-StudyHelper is a quiz/exam engine written in Python3, it was proposed to help students in their goals but you can use it for any purpose.
+StudyHelper is a quiz/exam engine written in Python3, It was proposed to help students in their goals.
 StudyHelper is also based on the let´s quiz project (https://github.com/akashgiricse/lets-quiz)
 
 ************
