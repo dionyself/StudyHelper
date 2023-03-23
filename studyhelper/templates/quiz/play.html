@@ -9,7 +9,11 @@
     <a href="{% url 'quiz:leaderboard' %}" class="btn btn-lg btn-info"><i class="fa fa-trophy" aria-hidden="true"></i> See the leaderboard here <i class="fa fa-trophy" aria-hidden="true"></i></a>
   </div>
   <div class="jumbotron my-4">
+    {% if session_score_id %}
+    <a href="{% url 'quiz:session_result' session_score_id %}" class="btn btn-info"><i class="fa fa-trophy" aria-hidden="true"></i> See full session results <i class="fa fa-trophy" aria-hidden="true"></i></a>
+    {% else %}
     <a href="{% url 'quiz:reset' %}" class="btn btn-info"><i class="fa fa-trophy" aria-hidden="true"></i> Reset your score <i class="fa fa-trophy" aria-hidden="true"></i></a>
+    {% endif %}
   </div>
 </div>
 

@@ -164,6 +164,7 @@ def play(request):
     quiz_profile, created = QuizProfile.objects.get_or_create(user=request.user)
     active_session = None
     next_session = None
+    session_score = None
     try:
 
         session_score = SessionScore.objects.filter(
@@ -302,6 +303,7 @@ def play(request):
             'tag_names': [c_tag.name for c_tag in question.tags.all()] if question else [],
             'question': question,
             'choices': choices,
+            'session_score_id': session_score.id if (session_score and not question) else 0,
             'session_duration': (active_session.closes_at - active_session.opens_at) / timedelta(minutes=1) if active_session else "",
             'session_time_left': (active_session.closes_at - datetime.now(timezone.utc)) / timedelta(minutes=1) if active_session else "",
             'session_next': next_session.opens_at if next_session else "",
@@ -338,6 +340,39 @@ def submission_result(request, attempted_question_pk):
     }
 
     return render(request, 'quiz/submission_result.html', context=context)
+
+@login_required()
+def session_result(request, session_score_id):
+    attempted_questions = []
+    attempted_questions_rendering = []
+    session_score = SessionScore.objects.filter(id=session_score_id, is_enabled=False, course_session__is_published=True).first()
+    if session_score:
+        attempted_questions = AttemptedQuestion.objects.filter(session=session_score.course_session, quiz_profile__user=session_score.user)
+    for attempted_question in attempted_questions:
+        selected_pks = [ selected.id for selected in attempted_question.selected_choices.all() ]
+        offered_pks = [int(id) for id in attempted_question.offered_choices_order.split()]
+        attempted_questions_rendering.append(
+            {
+                'attempted_question': attempted_question,
+                'selected_pks': selected_pks,
+                'non_selected_pks': [ non_sec for non_sec in offered_pks if (non_sec not in selected_pks) ],
+                'tag_names': [c_tag.name for c_tag in attempted_question.question.tags.all()],
+                #'course_name': "N/A" if not attempted_question.quiz_profile.course else attempted_question.quiz_profile.course.name,
+                'offered_pks': offered_pks
+            }
+        )
+
+    context = {
+        'attempted_questions': attempted_questions_rendering,
+        'session_username': session_score.user.username,
+        'session_score': session_score.total_score,
+        'session_started_at': session_score.course_session.opens_at,
+        'session_closed_at': session_score.course_session.closes_at,
+        'course_name': session_score.course_session.course.name if session_score.course_session.course else 'N/A',
+        'tag_names': [c_tag.name for c_tag in session_score.course_session.tags.all()],
+    }
+
+    return render(request, 'quiz/session_result.html', context=context)
 
 
 def login_view(request):
