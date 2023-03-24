@@ -190,13 +190,15 @@ def play(request):
             is_enabled=True, course_session__is_published=True,
             course_session__opens_at__gt=active_session.closes_at, 
             user=request.user).first()
-        next_session = next_session_score.course_session
+        if next_session_score:
+            next_session = next_session_score.course_session
     else:
         next_session_score = SessionScore.objects.filter(
             is_enabled=True, course_session__is_published=True,
             course_session__opens_at__gt=datetime.now(timezone.utc), 
             user=request.user).first()
-        next_session = next_session_score.course_session
+        if next_session_score:
+            next_session = next_session_score.course_session
 
 
 
