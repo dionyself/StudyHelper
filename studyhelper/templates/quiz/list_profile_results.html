@@ -1,0 +1,31 @@
+{% extends 'base.html' %}
+{% block title %} Study Helper | Leaderboard {% endblock title %}
+{% block content %}
+<div class="container">
+    <h1 class="text-center my-4"><span class="badge badge-info"> Last {{ total_count }} free questions attempted by the user: {{ username }}</span></h1>
+    <table class="table table-striped table-bordered">
+        <thead>
+            <tr>
+                <th>Question #</th>
+                <th>Question ID</th>
+                <th>Attempt ID</th>
+                <th>Text</th>
+                <th>Attempt date</th>
+                <th>Correct ?</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for attempt in free_attempts %}
+            <tr>
+                <td>{{ forloop.counter }}</td>
+                <td>{{ attempt.question.id }}</td>
+                <td><a href="{% url 'quiz:submission_result' attempt.id %}">{{ attempt.id }}</a></td>
+                <td>{{ attempt.question.html }}</td>
+                <td> N/A </td>
+                <td>{{ attempt.is_correct }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock content %}

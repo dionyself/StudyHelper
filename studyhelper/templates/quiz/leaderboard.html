@@ -28,7 +28,7 @@
                         <li>{{ tag.name }}</li>
                     {% endfor %}
                 </td>
-                <td>{{ quiz_profile.total_score }}</td>
+                <td><a href="{% url 'quiz:list_user_results' quiz_profile.user.id %}">{{ quiz_profile.total_score }}</a></td>
             </tr>
             {% endfor %}
         </tbody>

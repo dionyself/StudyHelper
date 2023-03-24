@@ -156,7 +156,7 @@ class QuizProfile(TimeStampedModel):
         self.update_score()
 
     def update_score(self):
-        marks_sum = self.attempts.filter(is_correct=True).aggregate(
+        marks_sum = self.attempts.filter(is_correct=True, session__isnull=True).aggregate(
             models.Sum('marks_obtained'))['marks_obtained__sum']
         self.total_score = marks_sum or 0
         self.save()

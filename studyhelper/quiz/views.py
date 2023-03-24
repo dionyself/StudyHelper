@@ -374,6 +374,17 @@ def session_result(request, session_score_id):
 
     return render(request, 'quiz/session_result.html', context=context)
 
+@login_required()
+def user_results(request, user_id):
+    free_attempts = AttemptedQuestion.objects.filter(session__isnull=True, quiz_profile__user__id=user_id).order_by('-id')[:500]
+    user = User.objects.get(pk=user_id)
+    return render(
+        request,
+        'quiz/list_profile_results.html',
+        context={
+            'free_attempts': free_attempts,
+            'total_count': len(free_attempts),
+            'username': user.username})
 
 def login_view(request):
     title = "Login"
