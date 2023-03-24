@@ -1,0 +1,104 @@
+[
+  {
+    "name": "Intermediate VLSI Exam",
+    "enforce_expertise_level": false,
+    "expertise_level": "CO",
+    "provider": "Study Helper",
+    "tags": [
+      {
+        "name": "VLSI"
+      }
+    ],
+    "questions": [
+      {
+        "expertise_level": "NO",
+        "html": "What does VLSI stand for?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {
+            "name": "VLSI"
+          }
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "Very Large Scale Integration",
+            "reason": "Correct, VLSI stands for Very Large Scale Integration"
+          },
+          {
+            "is_correct": false,
+            "html": "Variable Logic System Implementation",
+            "reason": "Incorrect, this is not what VLSI stands for"
+          },
+          {
+            "is_correct": false,
+            "html": "Virtual Logic System Integration",
+            "reason": "Incorrect, this is not what VLSI stands for"
+          }
+        ]
+      },
+      {
+        "expertise_level": "AD",
+        "html": "What is the difference between an ASIC and an FPGA?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {
+            "name": "VLSI"
+          }
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "An ASIC is custom-built for a specific application, while an FPGA is a programmable device",
+            "reason": "Correct, an ASIC is Application-Specific Integrated Circuit, it is designed for a specific application, while an FPGA is a Field-Programmable Gate Array, it is a programmable device"
+          },
+          {
+            "is_correct": false,
+            "html": "An ASIC is a programmable device, while an FPGA is custom-built for a specific application",
+            "reason": "Incorrect, this is the opposite of what ASIC and FPGA are"
+          },
+          {
+            "is_correct": false,
+            "html": "There is no difference, ASIC and FPGA are interchangeable",
+            "reason": "Incorrect, ASIC and FPGA are different types of devices"
+          }
+        ]
+      },
+      {
+        "expertise_level": "CO",
+        "html": "What is clock skew?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {
+            "name": "VLSI"
+          }
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "The difference in arrival times of the clock signal at different points in a circuit",
+            "reason": "Correct, clock skew is the difference in arrival times of the clock signal at different points in a circuit"
+          },
+          {
+            "is_correct": false,
+            "html": "The amount of jitter in the clock signal",
+            "reason": "Incorrect, clock skew is not the same as clock jitter"
+          },
+          {
+            "is_correct": false,
+            "html": "The delay introduced by the clock distribution network",
+            "reason": "Incorrect, this is not the definition of clock skew"
+          },
+          {
+            "is_correct": false,
+            "html": "The difference between the clock frequency and the data rate",
+            "reason": "Incorrect, this is not related to clock skew"
+          }
+        ]
+      }
+    ]
+  }     
+]

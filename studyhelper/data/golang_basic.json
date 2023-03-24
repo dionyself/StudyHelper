@@ -1,0 +1,64 @@
+[
+  {
+    "name": "Golang Basics",
+    "provider": "Study Helper",
+    "tags": [
+      {"name": "Basic"},
+      {"name": "Golang"}
+    ],
+    "questions": [
+      {
+        "html": "What is Golang?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {"name": "Basic"},
+          {"name": "Golang"}
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "A programming language",
+            "reason": "Yes, Golang is a programming language"
+          },
+          {
+            "is_correct": false,
+            "html": "An operating system",
+            "reason": "No, Golang is not an operating system"
+          },
+          {
+            "is_correct": false,
+            "html": "A web framework",
+            "reason": "No, Golang is not a web framework"
+          }
+        ]
+      },
+      {
+        "html": "What is the keyword used to define a function in Golang?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {"name": "Basic"},
+          {"name": "Golang"}
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "func",
+            "reason": "Yes, 'func' keyword is used to define a function in Golang"
+          },
+          {
+            "is_correct": false,
+            "html": "def",
+            "reason": "No, 'def' keyword is not used to define a function in Golang"
+          },
+          {
+            "is_correct": false,
+            "html": "function",
+            "reason": "No, 'function' keyword is not used to define a function in Golang"
+          }
+        ]
+      }
+    ]
+  }
+]

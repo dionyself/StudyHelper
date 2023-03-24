@@ -65,7 +65,7 @@
                         <li>{{ tag.name }}</li>
                     {% endfor %}
                 </td>
-                <td>{{ session_score.total_score }}</td>
+                <td><a href="{% url 'quiz:session_result' session_score.id %}">{{ session_score.total_score }}</a></td>
             </tr>
             {% endfor %}
         </tbody>

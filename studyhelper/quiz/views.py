@@ -313,7 +313,7 @@ def play(request):
 
 
 def _reset_profile(quiz_profile):
-    quiz_profile.attempts.all().delete()
+    quiz_profile.attempts.filter(session__isnull=True).all().delete()
     quiz_profile.total_score = 0
     return quiz_profile
 

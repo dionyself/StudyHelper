@@ -91,7 +91,7 @@ class QuizProfile(TimeStampedModel):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=self, session__isnull=True).values_list('question__pk', flat=True)
         
         expertise_filter = {"expertise_level": self.expertise_level}
-        expertise_filter_choices = ['NO', 'AB', 'CO', 'PR', 'EX']
+        expertise_filter_choices = ['NO', 'AD', 'CO', 'PR', 'EX']
         if not self.enforce_expertise_level:
             expertise_filter = {"expertise_level__in": expertise_filter_choices[:expertise_filter_choices.index(self.expertise_level)+1]}
         print(expertise_filter)
@@ -187,7 +187,7 @@ class CourseSession(TimeStampedModel):
             return None
         
         expertise_filter = {"expertise_level": self.expertise_level}
-        expertise_filter_choices = ['NO', 'AB', 'CO', 'PR', 'EX']
+        expertise_filter_choices = ['NO', 'AD', 'CO', 'PR', 'EX']
         if not self.enforce_expertise_level:
             expertise_filter = {"expertise_level__in": expertise_filter_choices[:expertise_filter_choices.index(self.expertise_level)+1]}
 
