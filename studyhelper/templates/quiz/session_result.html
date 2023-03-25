@@ -7,7 +7,7 @@
 	</div>
 {% for raw_attempted_question in attempted_questions %}
 	<div class="jumbotron my-4">
-	   	<h3 class="text-info">{{ attempted_question.question.html|safe }}</h3>
+	   	<h3 class="text-info">{{ raw_attempted_question.attempted_question.question.html|safe }}</h3>
 
 		<p>
 		    <strong>Your answer: </strong>

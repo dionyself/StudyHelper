@@ -1,104 +1,441 @@
 [
   {
-    "name": "Intermediate VLSI Exam",
-    "enforce_expertise_level": false,
-    "expertise_level": "CO",
-    "provider": "Study Helper",
-    "tags": [
+    "name":"Intermediate VLSI Exam",
+    "enforce_expertise_level":false,
+    "expertise_level":"CO",
+    "provider":"Study Helper",
+    "tags":[
       {
-        "name": "VLSI"
+        "name":"VLSI"
       }
     ],
-    "questions": [
+    "questions":[
       {
-        "expertise_level": "NO",
-        "html": "What does VLSI stand for?",
-        "is_published": true,
-        "maximum_marks": 4.0,
-        "tags": [
+        "expertise_level":"CO",
+        "html":"What is the difference between static and dynamic CMOS logic styles?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
           {
-            "name": "VLSI"
+            "name":"VLSI"
           }
         ],
-        "choices": [
+        "choices":[
           {
-            "is_correct": true,
-            "html": "Very Large Scale Integration",
-            "reason": "Correct, VLSI stands for Very Large Scale Integration"
+            "is_correct":true,
+            "html":"Static CMOS logic style does not have any dynamic node in the circuit and it is preferred for designs with less noise sensitivity. Dynamic CMOS logic style has dynamic node and it is preferred for high speed applications.",
+            "reason":"Correct, this is the main difference between static and dynamic CMOS logic styles."
           },
           {
-            "is_correct": false,
-            "html": "Variable Logic System Implementation",
-            "reason": "Incorrect, this is not what VLSI stands for"
+            "is_correct":false,
+            "html":"Static CMOS logic style is faster than dynamic CMOS logic style. Dynamic CMOS logic style is slower but more power efficient.",
+            "reason":"Incorrect, this is not the main difference between static and dynamic CMOS logic styles."
           },
           {
-            "is_correct": false,
-            "html": "Virtual Logic System Integration",
-            "reason": "Incorrect, this is not what VLSI stands for"
+            "is_correct":false,
+            "html":"Static CMOS logic style is used in high-speed applications and dynamic CMOS logic style is used in low-power applications.",
+            "reason":"Incorrect, this is not the main difference between static and dynamic CMOS logic styles."
+          },
+          {
+            "is_correct":false,
+            "html":"Static CMOS logic style uses only NMOS transistors while dynamic CMOS logic style uses both NMOS and PMOS transistors.",
+            "reason":"Incorrect, this is not the main difference between static and dynamic CMOS logic styles."
           }
         ]
       },
       {
-        "expertise_level": "AD",
-        "html": "What is the difference between an ASIC and an FPGA?",
-        "is_published": true,
-        "maximum_marks": 4.0,
-        "tags": [
+        "expertise_level":"AD",
+        "html":"What is meant by 'fan-in' and 'fan-out' in digital circuits?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
           {
-            "name": "VLSI"
+            "name":"VLSI"
           }
         ],
-        "choices": [
+        "choices":[
           {
-            "is_correct": true,
-            "html": "An ASIC is custom-built for a specific application, while an FPGA is a programmable device",
-            "reason": "Correct, an ASIC is Application-Specific Integrated Circuit, it is designed for a specific application, while an FPGA is a Field-Programmable Gate Array, it is a programmable device"
+            "is_correct":true,
+            "html":"Fan-in refers to the number of inputs to a gate, and fan-out refers to the number of gates that a gate can drive",
+            "reason":"This is the correct definition of fan-in and fan-out"
           },
           {
-            "is_correct": false,
-            "html": "An ASIC is a programmable device, while an FPGA is custom-built for a specific application",
-            "reason": "Incorrect, this is the opposite of what ASIC and FPGA are"
+            "is_correct":false,
+            "html":"Fan-in refers to the number of gates that a gate can drive, and fan-out refers to the number of inputs to a gate",
+            "reason":"This definition is incorrect"
           },
           {
-            "is_correct": false,
-            "html": "There is no difference, ASIC and FPGA are interchangeable",
-            "reason": "Incorrect, ASIC and FPGA are different types of devices"
+            "is_correct":false,
+            "html":"Fan-in refers to the number of outputs of a gate, and fan-out refers to the number of gates that a gate can drive",
+            "reason":"This definition is incorrect"
+          },
+          {
+            "is_correct":false,
+            "html":"Fan-in refers to the number of gates that a gate can drive, and fan-out refers to the number of outputs of a gate",
+            "reason":"This definition is incorrect"
           }
         ]
       },
       {
-        "expertise_level": "CO",
-        "html": "What is clock skew?",
-        "is_published": true,
-        "maximum_marks": 4.0,
-        "tags": [
+        "expertise_level":"NO",
+        "html":"Which is not a component of the basic CMOS logic gate?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
           {
-            "name": "VLSI"
+            "name":"VLSI"
           }
         ],
-        "choices": [
+        "choices":[
           {
-            "is_correct": true,
-            "html": "The difference in arrival times of the clock signal at different points in a circuit",
-            "reason": "Correct, clock skew is the difference in arrival times of the clock signal at different points in a circuit"
+            "is_correct":false,
+            "html":"Diode",
+            "reason":"Diodes can be used in CMOS gates for various functions such as ESD protection, but they are not a component of the basic CMOS inverter gate"
           },
           {
-            "is_correct": false,
-            "html": "The amount of jitter in the clock signal",
-            "reason": "Incorrect, clock skew is not the same as clock jitter"
+            "is_correct":false,
+            "html":"N-type MOSFET",
+            "reason":"N-type MOSFET is one of the two transistors (the other being P-type) used in CMOS gates"
           },
           {
-            "is_correct": false,
-            "html": "The delay introduced by the clock distribution network",
-            "reason": "Incorrect, this is not the definition of clock skew"
+            "is_correct":true,
+            "html":"BJT",
+            "reason":"BJT (Bipolar Junction Transistor) is not used in CMOS gates"
           },
           {
-            "is_correct": false,
-            "html": "The difference between the clock frequency and the data rate",
-            "reason": "Incorrect, this is not related to clock skew"
+            "is_correct":false,
+            "html":"P-type MOSFET",
+            "reason":"P-type MOSFET is one of the two transistors (the other being N-type) used in CMOS gates"
+          }
+        ]
+      },
+      {
+        "expertise_level":"NO",
+        "html":"Which of the following is not a basic logic gate?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":false,
+            "html":"AND gate",
+            "reason":"AND gate is a basic logic gate"
+          },
+          {
+            "is_correct":false,
+            "html":"OR gate",
+            "reason":"OR gate is a basic logic gate"
+          },
+          {
+            "is_correct":true,
+            "html":"XOR gate",
+            "reason":"XOR gate is not a basic logic gate"
+          },
+          {
+            "is_correct":false,
+            "html":"NOT gate",
+            "reason":"NOT gate is a basic logic gate"
+          }
+        ]
+      },
+      {
+        "expertise_level":"AD",
+        "html":"What is the maximum fan-out of a gate in a CMOS circuit?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":false,
+            "html":"1",
+            "reason":"The fan-out of a gate in a CMOS circuit can be greater than 1"
+          },
+          {
+            "is_correct":false,
+            "html":"2",
+            "reason":"The fan-out of a gate in a CMOS circuit can be greater than 2"
+          },
+          {
+            "is_correct":true,
+            "html":"Depends on the technology",
+            "reason":"The fan-out of a gate in a CMOS circuit depends on the technology used"
+          },
+          {
+            "is_correct":false,
+            "html":"4",
+            "reason":"The fan-out of a gate in a CMOS circuit can be greater than 4"
+          }
+        ]
+      },
+      {
+        "expertise_level":"CO",
+        "html":"What is the purpose of an adder circuit in a CPU?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":true,
+            "html":"To perform arithmetic operations on data",
+            "reason":"Adder circuit is used to add two numbers and perform other arithmetic operations"
+          },
+          {
+            "is_correct":false,
+            "html":"To store data temporarily",
+            "reason":"An adder circuit is not used to store data temporarily"
+          },
+          {
+            "is_correct":false,
+            "html":"To provide power to the CPU",
+            "reason":"An adder circuit is not used to provide power to the CPU"
+          },
+          {
+            "is_correct":false,
+            "html":"To connect different components of the CPU",
+            "reason":"An adder circuit is not used to connect different components of the CPU"
+          }
+        ]
+      },
+      {
+        "expertise_level":"NO",
+        "html":"What is a flip-flop?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":true,
+            "html":"A type of digital circuit that can store one bit of information",
+            "reason":"This is the correct definition of a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A type of analog circuit that can store one bit of information",
+            "reason":"This is not the correct definition of a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A type of memory device that can store multiple bits of information",
+            "reason":"This is not the correct definition of a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A type of logic gate that can perform addition and subtraction",
+            "reason":"This is not the correct definition of a flip-flop."
+          }
+        ]
+      },
+      {
+        "expertise_level":"AD",
+        "html":"What is the difference between a latch and a flip-flop?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":true,
+            "html":"A flip-flop is edge-triggered, while a latch is level-triggered",
+            "reason":"This is the correct difference between a latch and a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A latch is edge-triggered, while a flip-flop is level-triggered",
+            "reason":"This is not the correct difference between a latch and a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A flip-flop is faster than a latch",
+            "reason":"This is not the correct difference between a latch and a flip-flop."
+          },
+          {
+            "is_correct":false,
+            "html":"A latch is faster than a flip-flop",
+            "reason":"This is not the correct difference between a latch and a flip-flop."
+          }
+        ]
+      },
+      {
+        "expertise_level":"NO",
+        "html":"What does VLSI stand for?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":false,
+            "html":"Very Low Scale Integration",
+            "reason":"This is not the correct definition of VLSI."
+          },
+          {
+            "is_correct":false,
+            "html":"Varying Large Scale Integration",
+            "reason":"This is not the correct definition of VLSI."
+          },
+          {
+            "is_correct":false,
+            "html":"Varying Low Scale Integration",
+            "reason":"This is not the correct definition of VLSI."
+          },
+          {
+            "is_correct":true,
+            "html":"Very Large Scale Integration",
+            "reason":"Correct, VLSI stands for Very Large Scale Integration"
+          },
+          {
+            "is_correct":false,
+            "html":"Voltage-Level Sensitive Interrupt",
+            "reason":"This is not the correct definition of VLSI"
+          },
+          {
+            "is_correct":false,
+            "html":"Visual Logic Simulation and Implementation",
+            "reason":"This is not the correct definition of VLSI"
+          },
+          {
+            "is_correct":false,
+            "html":"Virtual Logic Standard Implementation",
+            "reason":"This is not the correct definition of VLSI"
+          },
+          {
+            "is_correct":false,
+            "html":"Variable Logic System Implementation",
+            "reason":"Incorrect, this is not what VLSI stands for"
+          },
+          {
+            "is_correct":false,
+            "html":"Virtual Logic System Integration",
+            "reason":"Incorrect, this is not what VLSI stands for"
+          },
+          {
+            "is_correct":false,
+            "html":"Variable Low Signal Input",
+            "reason":"Incorrect, this does not correspond to the acronym VLSI."
+          },
+          {
+            "is_correct":false,
+            "html":"Volatile Logical System Integration",
+            "reason":"Incorrect, this does not correspond to the acronym VLSI."
+          }
+        ]
+      },
+      {
+        "expertise_level":"AD",
+        "html":"What is the typical size range of a transistor in modern VLSI technologies?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":false,
+            "html":"1 micron to 10 microns",
+            "reason":"Incorrect, this range is too large and does not correspond to modern VLSI technologies."
+          },
+          {
+            "is_correct":false,
+            "html":"100 nanometers to 1 micron",
+            "reason":"Incorrect, this range is too large and does not correspond to modern VLSI technologies."
+          },
+          {
+            "is_correct":true,
+            "html":"10 nanometers to 100 nanometers",
+            "reason":"Correct, this is the typical size range of a transistor in modern VLSI technologies."
+          },
+          {
+            "is_correct":false,
+            "html":"1 nanometer to 10 nanometers",
+            "reason":"Incorrect, this range is too small and does not correspond to modern VLSI technologies."
+          }
+        ]
+      },
+      {
+        "expertise_level":"AD",
+        "html":"What is the difference between an ASIC and an FPGA?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":true,
+            "html":"An ASIC is custom-built for a specific application, while an FPGA is a programmable device",
+            "reason":"Correct, an ASIC is Application-Specific Integrated Circuit, it is designed for a specific application, while an FPGA is a Field-Programmable Gate Array, it is a programmable device"
+          },
+          {
+            "is_correct":false,
+            "html":"An ASIC is a programmable device, while an FPGA is custom-built for a specific application",
+            "reason":"Incorrect, this is the opposite of what ASIC and FPGA are"
+          },
+          {
+            "is_correct":false,
+            "html":"There is no difference, ASIC and FPGA are interchangeable",
+            "reason":"Incorrect, ASIC and FPGA are different types of devices"
+          }
+        ]
+      },
+      {
+        "expertise_level":"CO",
+        "html":"What is clock skew?",
+        "is_published":true,
+        "maximum_marks":4.0,
+        "tags":[
+          {
+            "name":"VLSI"
+          }
+        ],
+        "choices":[
+          {
+            "is_correct":true,
+            "html":"The difference in arrival times of the clock signal at different points in a circuit",
+            "reason":"Correct, clock skew is the difference in arrival times of the clock signal at different points in a circuit"
+          },
+          {
+            "is_correct":false,
+            "html":"The amount of jitter in the clock signal",
+            "reason":"Incorrect, clock skew is not the same as clock jitter"
+          },
+          {
+            "is_correct":false,
+            "html":"The delay introduced by the clock distribution network",
+            "reason":"Incorrect, this is not the definition of clock skew"
+          },
+          {
+            "is_correct":false,
+            "html":"The difference between the clock frequency and the data rate",
+            "reason":"Incorrect, this is not related to clock skew"
           }
         ]
       }
     ]
-  }     
+  }
 ]

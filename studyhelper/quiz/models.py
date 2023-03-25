@@ -116,7 +116,10 @@ class QuizProfile(TimeStampedModel):
         randomized_choices = correct_choices
         INCORRECT_CHOICES_TO_OFFER_COUNT = random.choice(list(range(2 if len(correct_choices) < 4 else 0, len(correct_choices)*3 )))
         for _ in range(INCORRECT_CHOICES_TO_OFFER_COUNT):
-            incorrect_choice_to_offer = incorrect_choices.pop()
+            try:
+                incorrect_choice_to_offer = incorrect_choices.pop()
+            except:
+                break
             if incorrect_choice_to_offer:
                 randomized_choices.append(incorrect_choice_to_offer)
         shuffed_choices = list(randomized_choices)
@@ -252,7 +255,10 @@ class CourseSession(TimeStampedModel):
         randomized_choices = correct_choices
         INCORRECT_CHOICES_TO_OFFER_COUNT = random.choice(list(range(2 if len(correct_choices) < 4 else 0, len(correct_choices)*3 )))
         for _ in range(INCORRECT_CHOICES_TO_OFFER_COUNT):
-            incorrect_choice_to_offer = incorrect_choices.pop()
+            try:
+                incorrect_choice_to_offer = incorrect_choices.pop()
+            except:
+                break
             if incorrect_choice_to_offer:
                 randomized_choices.append(incorrect_choice_to_offer)
         shuffed_choices = list(randomized_choices)

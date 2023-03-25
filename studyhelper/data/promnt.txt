@@ -1,4 +1,5 @@
-Hi, can you generate  an intermediate VLSI exam  ...  and return it as a json struct that satisfy the following Json Schemma validator:
+Hello, can you generate  an intermediate VLSI exam for me?
+Return in JSON format and will satisfy the following JSON Schema validator:
 
 {
   "type": "array",
@@ -59,19 +60,18 @@ Hi, can you generate  an intermediate VLSI exam  ...  and return it as a json st
   }
 }
 
-The value for keyname "provider" is required, so set it to "Study Helper".
-The value for keyname "tags" is required, so set it to [{"name": "VLSI"}] in all its occurrences.
-The value for keyname "name" is the exam title  at it first occurrence (at the top).
-The value for keyname "html" (in a question object) is the question text.
-The possible values for keyname "expertise_level" are: "NO" (for Novice), "AD" (for Advanced Beginner), "CO", (for Competent), "PR" (for Proficient) or "EX" (for Expert).
-The value for keyname "enforce_expertise_level" is: false
-The value of "expertise_level" of the exam shoulbe set according its difficulty, and he value of "expertise_level" of each question shouldbe set to be lower o equal to the exam's "expertise_level".
-The value for keyname "choices" are a list of option objects.
-A question can have from 3 (min) up to 12 (max) choices (options).
-A question may have multiple correct choices (options)  but no more than 30% of choices can be correct.
-The value for keyname "html" (in a option object) is the option text.
-if an option is correct then set the value of its "is_correct" to: true
-if an option is incorrect then set the value of its "is_correct" to: false
-the value for keyname "is_published" is always: true
-the value for keyname "maximum_marks" is always: 4.0
-the value for keyname "reason" a short explanation on why the current option is correct or not.
+The exam will have the following characteristics:
+
+    The exam title will be specified in the first occurrence of the 'name' key.
+    The value for key name 'provider' will be set to 'Study Helper'.
+    The value for key name 'tags' will be set to '[{"name": "VLSI"}]' in all occurrences.
+    The value for key name 'enforce_expertise_level' will be set to false.
+    The possible values for key name 'expertise_level' are: 'NO' (for Novice), 'AD' (for Advanced Beginner), 'CO', (for Competent), 'PR' (for Proficient) or 'EX' (for Expert).
+    The value of 'expertise_level' of the exam will be set according to its difficulty, and the value of 'expertise_level' of each question will be set to be lower or equal to the exam's 'expertise_level'.
+    Each question will have from 3 (min) up to 12 (max) choices (options).
+    A question may have multiple correct choices (options) but no more than 30% of choices can be correct.
+    The value for key name 'html' (in a question or option object) will be the question or option text.
+    If an option is correct, the value of its 'is_correct' key will be set to 'true'. If an option is incorrect, the value of its 'is_correct' key will be set to 'false'.
+    The value for key name 'is_published' will always be 'true'.
+    The value for key name 'maximum_marks' will always be 4.0.
+    The value for key name 'reason' will be a short explanation on why the current option is correct or not."

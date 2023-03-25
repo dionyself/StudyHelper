@@ -1,0 +1,91 @@
+[
+  {
+    "name": "Examen de dinosaurios",
+    "enforce_expertise_level": false,
+    "expertise_level": "NO",
+    "provider": "Study Helper",
+    "tags": [
+      {"name": "DINO"}
+    ],
+    "questions": [
+      {
+        "expertise_level": "NO",
+        "html": "¿Qué son los dinosaurios?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {"name": "DINO"}
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "Animales prehistóricos que vivieron hace millones de años.",
+            "reason": "Correcto, los dinosaurios vivieron en la era mesozoica hace entre 245 y 65 millones de años."
+          },
+          {
+            "is_correct": false,
+            "html": "Reptiles que todavía viven en la actualidad.",
+            "reason": "Incorrecto, los dinosaurios se extinguieron hace millones de años y no hay reptiles vivos que sean dinosaurios."
+          },
+          {
+            "is_correct": false,
+            "html": "Animales que nunca existieron y solo aparecen en películas y libros de ficción.",
+            "reason": "Incorrecto, los dinosaurios realmente existieron y hay evidencia científica de su existencia."
+          }
+        ]
+      },
+      {
+        "expertise_level": "NO",
+        "html": "¿Cómo se llaman los científicos que estudian los dinosaurios?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {"name": "DINO"}
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "Paleontólogos.",
+            "reason": "Correcto, los paleontólogos son los científicos que estudian los fósiles, incluyendo los fósiles de dinosaurios."
+          },
+          {
+            "is_correct": false,
+            "html": "Zoólogos.",
+            "reason": "Incorrecto, los zoólogos estudian los animales actuales y no los fósiles."
+          },
+          {
+            "is_correct": false,
+            "html": "Biólogos.",
+            "reason": "Incorrecto, los biólogos estudian la vida en general, pero los paleontólogos se enfocan en el estudio de los fósiles."
+          }
+        ]
+      },
+      {
+        "expertise_level": "AD",
+        "html": "¿Cuál fue el dinosaurio más grande que ha existido?",
+        "is_published": true,
+        "maximum_marks": 4.0,
+        "tags": [
+          {"name": "DINO"}
+        ],
+        "choices": [
+          {
+            "is_correct": true,
+            "html": "El Argentinosaurus.",
+            "reason": "Correcto, el Argentinosaurus es uno de los dinosaurios más grandes que se conoce, llegando a medir unos 40 metros de largo."
+          },
+          {
+            "is_correct": false,
+            "html": "El Tyrannosaurus rex.",
+            "reason": "Incorrecto, el Tyrannosaurus rex es uno de los dinosaurios más conocidos pero no es el más grande que se conoce."
+          },
+          {
+            "is_correct": true,
+            "html": "El pterosaur.",
+            "reason": "Correcto, el pterosaur es uno de los dinosaurios más grandes que se conoce, llegando a medir unos 10 metros de largo."
+          }
+        ]
+      }
+    ]
+  }
+]
