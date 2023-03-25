@@ -103,18 +103,18 @@ def import_json_course(course_json_files):
 
 
 def course_db_to_dict(course_instance):
-    course_data = model_to_dict(course_instance, fields=["name", "tags", "provider", "expertise_level", "enforce_expertise_level"])
+    course_data = model_to_dict(course_instance, fields=["name", "tags", "provider", "image", "expertise_level", "enforce_expertise_level"])
     course_data["questions"] = course_instance.question_set.all()
     question_dicts = []
     for question in course_data["questions"]:
         choices = question.choices.all()
-        question_dict = model_to_dict(question, fields=["html", "is_published", "maximum_marks", "tags", "expertise_level"])
+        question_dict = model_to_dict(question, fields=["html", "is_published", "image", "maximum_marks", "tags", "expertise_level"])
         question_dict["choices"] = choices
         question_dict["maximum_marks"] = float(question_dict["maximum_marks"])
         question_dicts.append(question_dict)
     course_data["tags"] = [model_to_dict(tag, fields=["name",]) for tag in course_data["tags"]]
     for question in question_dicts:
-        question["choices"] = [model_to_dict(choice, fields=["html", "is_correct", "reason"]) for choice in question["choices"]]
+        question["choices"] = [model_to_dict(choice, fields=["html", "is_correct", "image", "reason"]) for choice in question["choices"]]
         question["tags"] = [model_to_dict(tag, fields=["name",]) for tag in question["tags"]]
     course_data["questions"] = question_dicts
     print(course_data)

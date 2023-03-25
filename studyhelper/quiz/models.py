@@ -25,6 +25,7 @@ class Course(TimeStampedModel):
     name = models.TextField(_('Course Name'), unique=True)
     tags = models.ManyToManyField(Tag, blank=True)
     provider = models.TextField(_('Provider Name'))
+    image = models.TextField(_('SVG QR Image'), default='', null=True, blank=True)
     expertise_level = models.CharField(
         max_length=2,
         choices=EXPERTISE_LEVEL_CHOICES,
@@ -46,6 +47,7 @@ class Question(TimeStampedModel):
     maximum_marks = models.DecimalField(_('Maximum Marks'), default=4, decimal_places=2, max_digits=6)
     courses = models.ManyToManyField(Course, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
+    image = models.TextField(_('SVG Image'), default='', null=True, blank=True)
     expertise_level = models.CharField(
         max_length=2,
         choices=EXPERTISE_LEVEL_CHOICES,
@@ -63,6 +65,7 @@ class Choice(TimeStampedModel):
     question = models.ForeignKey(Question, related_name='choices', on_delete=models.CASCADE)
     is_correct = models.BooleanField(_('Is this answer correct?'), default=False, null=False)
     html = models.TextField(_('Choice Text'))
+    image = models.TextField(_('SVG Image'), default='', null=True, blank=True)
     reason = models.TextField(_('Choice Reason Text'), blank=True, default="", null=False)
 
     def __str__(self):
@@ -77,6 +80,7 @@ class QuizProfile(TimeStampedModel):
     total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
     course = models.ForeignKey(Course, null=True, blank=True, related_name='profiles', on_delete=models.CASCADE)
     tags = models.ManyToManyField(Tag, blank=True)
+    image = models.TextField(_('SVG QR Image'), default='', null=True, blank=True)
     expertise_level = models.CharField(
         max_length=2,
         choices=EXPERTISE_LEVEL_CHOICES,
@@ -174,6 +178,7 @@ class CourseSession(TimeStampedModel):
     tags = models.ManyToManyField(Tag, blank=True)
     max_n_questions = models.IntegerField(blank=True, default=0)
     questions = models.ManyToManyField(Question, blank=True)
+    image = models.TextField(_('SVG QR Image'), default='', null=True, blank=True)
     expertise_level = models.CharField(
         max_length=2,
         choices=EXPERTISE_LEVEL_CHOICES,

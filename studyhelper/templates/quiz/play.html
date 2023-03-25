@@ -33,6 +33,9 @@
 	</div>
   <div class="jumbotron my-4">
     <h3 class="text-info">{{ question.html|safe }}</h3>
+    {% if question.image %}
+      <p>{{ question.image|safe }}</p>
+    {% endif %}
     <form class="form" action="" method="post">
         {% csrf_token %}
         <input type="hidden" name="question_pk" value="{{ question.pk }}">
@@ -41,6 +44,9 @@
             <input class="form-check-input" type="checkbox" name="choice_pk" id="choice-{{ forloop.counter }}" value="{{ choice.pk }}">
             <label class="form-check-label" for="choice-{{ forloop.counter }}">
               {{ choice.html|safe }}
+              {% if choice.image %}
+                <p>{{ choice.image|safe }}</p>
+              {% endif %}
             </label>
           </div>
 

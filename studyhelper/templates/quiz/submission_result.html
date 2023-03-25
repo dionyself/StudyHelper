@@ -8,6 +8,9 @@
 
 	<div class="jumbotron my-4">
 	   	<h3 class="text-info">{{ attempted_question.question.html|safe }}</h3>
+		{% if attempted_question.question.image %}
+		  <p>{{ attempted_question.question.image|safe }}</p>
+		{% endif %}
 
 		<p>
 		    <strong>Your answer: </strong>
@@ -22,6 +25,9 @@
 								<span>&#x2705;</span>
 								<label class="form-check-label" for="choice-{{ ordered_pk }}">
 							  		{{ offered_choice.html|safe }}
+									{% if offered_choice.image %}
+									  <p>{{ offered_choice.image|safe }}</p>
+									{% endif %}
 								</label>
 								<span> -> It's correct because: {{ offered_choice.reason }}</span>
 							{% else %}
@@ -29,6 +35,9 @@
 								<span>&#10060;</span>
 								<label class="form-check-label" for="choice-{{ ordered_pk }}">
 									{{ offered_choice.html|safe }}
+									{% if offered_choice.image %}
+									  <p>{{ offered_choice.image|safe }}</p>
+									{% endif %}
 								</label>
 								<span> -> You should select this. It's correct because: {{ offered_choice.reason }}</span>
 							{% endif %}
@@ -38,6 +47,9 @@
 								<span>&#10060;</span>
 								<label class="form-check-label" for="choice-{{ ordered_pk }}">
 									{{ offered_choice.html|safe }}
+									{% if offered_choice.image %}
+									  <p>{{ offered_choice.image|safe }}</p>
+									{% endif %}
 								</label>
 								<span> -> You shouldn't select this. It's incorrect because: {{ offered_choice.reason }}</span>
 							{% else %}
@@ -45,6 +57,9 @@
 								<span>&#x2705;</span>
 								<label class="form-check-label" for="choice-{{ ordered_pk }}">
 									{{ offered_choice.html|safe }}
+									{% if offered_choice.image %}
+									  <p>{{ offered_choice.image|safe }}</p>
+									{% endif %}
 								</label>
 								<span> -> It's incorrect because: {{ offered_choice.reason }}</span>
 							{% endif %}

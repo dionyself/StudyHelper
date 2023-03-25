@@ -8,7 +8,7 @@ from .models import Question, Choice, Tag, Course
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
-        fields = ['html', 'tags', 'courses', 'is_published', 'expertise_level']
+        fields = ['html', 'image', 'tags', 'courses', 'is_published', 'expertise_level']
         widgets = {
             'html': forms.Textarea(attrs={'rows': 3, 'cols': 80}),
         }
@@ -17,9 +17,11 @@ class QuestionForm(forms.ModelForm):
 class ChoiceForm(forms.ModelForm):
     class Meta:
         model = Choice
-        fields = ['html', 'reason', 'is_correct']
+        fields = ['html', 'image', 'reason', 'is_correct']
         widgets = {
             'html': forms.Textarea(attrs={'rows': 2, 'cols': 80}),
+            'image': forms.Textarea(attrs={'rows': 2, 'cols': 80}),
+            'reason': forms.Textarea(attrs={'rows': 2, 'cols': 80}),
         }
 
 
