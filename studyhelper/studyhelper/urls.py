@@ -26,6 +26,7 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('quiz.urls')),
+#    path('invite/', include('invite.urls')),
 ]
 
 handler404 = quiz_views.error_404
