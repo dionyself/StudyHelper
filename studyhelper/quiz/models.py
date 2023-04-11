@@ -1,4 +1,5 @@
 import random
+from datetime import datetime, timezone
 from django.db import models
 from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
@@ -213,6 +214,23 @@ class CourseSession(TimeStampedModel):
             session_score.is_enabled = False
             session_score.save()
             return
+
+        if not self.enforce_expertise_level:
+            expertise_gear=[]
+            for exp_filter in expertise_filter["expertise_level__in"]:
+                expertise_gear.append(remaining_questions.filter(expertise_level=exp_filter))
+
+            if self.max_n_questions:
+                position_val = self.max_n_questions // len(expertise_filter["expertise_level__in"])
+                position_index = len(used_questions_pk) // position_val
+                if expertise_gear[position_index].exists():
+                    return random.choice(expertise_gear[position_index])
+            else:
+                position_val = (self.closes_at - self.opens_at) // len(expertise_filter["expertise_level__in"])
+                position_index = (datetime.now(timezone.utc) - self.opens_at) // position_val
+                if expertise_gear[position_index].exists():
+                    return random.choice(expertise_gear[position_index])
+
         return random.choice(remaining_questions)
     
     def evaluate_attempt(self, attempted_question, selected_choices, quiz_profile):
