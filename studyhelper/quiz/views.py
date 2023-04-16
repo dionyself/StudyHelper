@@ -275,6 +275,8 @@ def play(request):
             course_session.users.add(*[User.objects.get(id=int(u)) for u in session_users])
             course_session.tags.add(*[Tag.objects.get(id=int(t)) for t in session_tags])
             course_session.questions.add(*[Question.objects.get(id=int(cs)) for cs in session_questions])
+            course_session.session_questions_order = " ".join([question for question in session_questions])
+            course_session.enforce_questions_order = int(request.GET.get('enforce_questions_order', "0"))
             SessionScore.objects.create(course_session=course_session, is_enabled=True, user=quiz_profile.user)
         
         try:

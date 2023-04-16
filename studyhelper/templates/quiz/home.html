@@ -58,12 +58,49 @@
           <label for="e_expertise_level">Enforce expertise level</label>
           <input type="checkbox" id="e_expertise_level" value="1" name="session_enforce_expertise_level">
           <br>
-          <label for="session_questions_select">Choose questions:</label>
-          <select size="4" name="session_questions" id="session_questions_select" multiple>
-            {% for question in questions %}
-              <option value="{{ question.id }}">{{ question.html }}</option>
-            {% endfor %}
-          </select>
+                      <div class="container" style="margin-top: 20px;" id="multiselectlist">
+                        <table class="w-100">
+                          <tr>
+                            <th>|Question list </th>
+                            <th>|Move </th>
+                            <th>|SELECT Session Questions </th>
+                            <th>|Order|</th>
+                          </tr>
+                          <tr>
+                            <td>
+                          <select multiple  id="multivalfrom" size="8" class="w-100">
+                            {% for question in questions %}
+                            <option value="{{ question.id }}">{{ question.html }}</option>
+                            {% endfor %}
+                          </select>
+                        </td>
+
+                      <td>
+                          <div class="btn-group-vertical w-100">
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Move All" id="move_all_btn"><i class='fa fa-angle-double-right'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Move" id="move_btn"><i class='fa fa-angle-right'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Remove" id="remove_btn"><i class='fa fa-angle-left'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Remove All" id="remove_all_btn"><i class='fa fa-angle-double-left'></i></button>
+                          </div>	
+                        </td>
+                      <td>
+                          <select name="session_questions" multiple id="multivalto" size="8" class="w-100">
+                          </select>
+                        </td>
+                      <td>
+                          <div class="btn-group-vertical w-100">
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Top" id="top_btn"><i class='fa fa-angle-double-up'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Up" id="up_btn"><i class='fa fa-angle-up'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Down" id="down_btn"><i class='fa fa-angle-down'></i></button>
+                            <button type="button" class="btn btn-default col-sm-12 btn-sm" title="Bottom" id="bottom_btn"><i class='fa fa-angle-double-down'></i></button>
+                          </div>
+                        </td>
+                        </tr>
+                        </table>
+                      </div>
+            <label for="e_questions_order">Enforce questions order:</label>
+            <input type="checkbox" id="e_questions_order" value="1" name="enforce_questions_order" checked>            
+          <br>
           <label for="session_tag_select">Choose tags:</label>
           <select size="4" name="session_tags" id="session_tag_select" multiple>
             {% for tag in tags %}
@@ -94,5 +131,13 @@
         {% endif %}
       </div>  
     </section>
-
+    
 {% endblock content %}
+{% block js %}
+    <script>
+      $(document).ready(function(){
+        assign_btn_action('multiselectlist');
+      });
+    
+    </script>
+{% endblock js %}

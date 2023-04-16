@@ -186,6 +186,9 @@ class CourseSession(TimeStampedModel):
         default="CO"
     )
     enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
+    enforce_questions_order = models.BooleanField(default=True, null=False, blank=True)
+    session_questions_order = models.TextField(_('Question Text'), default='', null=False, blank=True)
+    
 
     def get_new_question(self, quiz_profile):
         used_questions_pk = AttemptedQuestion.objects.filter(quiz_profile=quiz_profile, session=self).values_list('question__pk', flat=True)
@@ -206,6 +209,11 @@ class CourseSession(TimeStampedModel):
             remaining_questions = Question.objects.filter(**expertise_filter).filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
         elif self.questions.all():
             remaining_questions = self.questions.exclude(pk__in=used_questions_pk)
+            if self.enforce_questions_order and self.session_questions_order:
+                for ordered_question in self.session_questions_order.split(","):
+                    for unordered in remaining_questions.all():
+                        if int(ordered_question) == unordered.id:
+                            return unordered
         else:
             remaining_questions = Question.objects.filter(**expertise_filter).exclude(pk__in=used_questions_pk)
 
