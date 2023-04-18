@@ -328,6 +328,15 @@ def reset(request):
     quiz_profile.save()
     return redirect('/')
 
+@login_required()
+def as_template(request, session_id):
+    context = {
+        'questions': CourseSession.objects.get(pk=session_id).questions.all(),
+        'users': User.objects.all(),
+        'courses': [],
+        'tags': [],
+    }
+    return render(request, 'quiz/user_home.html', context=context)
 
 @login_required()
 def submission_result(request, attempted_question_pk):

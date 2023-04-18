@@ -46,6 +46,7 @@
                 <th>Course</th>
                 <th>Tags</th>
                 <th>Score</th>
+                <th>Duplicate?</th>
             </tr>
         </thead>
         <tbody>
@@ -66,6 +67,13 @@
                     {% endfor %}
                 </td>
                 <td><a href="{% url 'quiz:session_result' session_score.id %}">{{ session_score.total_score }}</a></td>
+                <td>
+                    {% if session_score.course_session.questions.all %}
+                        <a href="{% url 'quiz:use_session_as_template' session_score.course_session.id %}">Use it as template</a>
+                    {% else %}
+                      N/A
+                    {% endif %}
+                </td>
             </tr>
             {% endfor %}
         </tbody>
