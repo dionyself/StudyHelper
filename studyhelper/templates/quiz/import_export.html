@@ -20,7 +20,7 @@
                     </form>
                     <form class="form" action="{% url 'quiz:import_export' %}" method="post" enctype="multipart/form-data">
                       {% csrf_token %}
-                      <label for="file_input">Choose tags:</label>
+                      <label for="file_input">Files upload:</label>
                       <input type="file" id="file_input" name="course_file" multiple>
                       <input class="btn btn-info btn-lg" type="submit" value="Import course/s">  
                     </form>
