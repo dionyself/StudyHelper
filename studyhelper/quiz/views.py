@@ -330,11 +330,21 @@ def reset(request):
 
 @login_required()
 def as_template(request, session_id):
+    session = CourseSession.objects.get(pk=session_id)
+    questions = []
+    unordered_questions = session.questions.all()
+    if session.enforce_questions_order and session.session_questions_order:
+        for ordered_question in session.session_questions_order.split(","):
+            for unordered_question in unordered_questions:
+                if int(ordered_question) == unordered_question.id:
+                    questions.append(unordered_question)
+    else:
+        questions = unordered_questions
     context = {
-        'questions': CourseSession.objects.get(pk=session_id).questions.all(),
+        'questions': questions,
         'users': User.objects.all(),
-        'courses': [],
-        'tags': [],
+        'courses': [session.course] if session.course else [],
+        'tags': session.tags.all() or [],
     }
     return render(request, 'quiz/user_home.html', context=context)
 

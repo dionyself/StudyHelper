@@ -99,7 +99,6 @@ class QuizProfile(TimeStampedModel):
         expertise_filter_choices = ['NO', 'AD', 'CO', 'PR', 'EX']
         if not self.enforce_expertise_level:
             expertise_filter = {"expertise_level__in": expertise_filter_choices[:expertise_filter_choices.index(self.expertise_level)+1]}
-        print(expertise_filter)
         
         if self.course:
             remaining_questions = self.course.question_set.exclude(pk__in=used_questions_pk)
