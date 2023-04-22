@@ -223,6 +223,10 @@ class CourseSession(TimeStampedModel):
             return
 
         if not self.enforce_expertise_level:
+            #previous_question = None
+            #if used_questions_pk:
+            #    previous_question = AttemptedQuestion.objects.get(pk=used_questions_pk[-1])
+
             expertise_gear=[]
             for exp_filter in expertise_filter["expertise_level__in"]:
                 expertise_gear.append(remaining_questions.filter(expertise_level=exp_filter))
@@ -232,11 +236,15 @@ class CourseSession(TimeStampedModel):
                     position_index = len(used_questions_pk) // position_val
                     if expertise_gear[position_index].exists():
                         return random.choice(expertise_gear[position_index])
+                    elif expertise_gear[position_index+1].exists():
+                        return random.choice(expertise_gear[position_index+1])
                 else:
                     position_val = (self.closes_at - self.opens_at) // len(expertise_filter["expertise_level__in"])
                     position_index = (datetime.now(timezone.utc) - self.opens_at) // position_val
                     if expertise_gear[position_index].exists():
-                        return random.choice(expertise_gear[position_index])
+                        return random.choice(expertise_gear[position_index+1])
+                    elif expertise_gear[position_index+1].exists():
+                        return random.choice(expertise_gear[position_index+1])
             except:
                 pass #Ignore rounding errors
 
