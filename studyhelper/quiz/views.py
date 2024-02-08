@@ -7,7 +7,7 @@ from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
-from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice, CourseSession, SessionScore
+from .models import QuizProfile, Question, AttemptedQuestion, Course, Tag, Choice, CourseSession, SessionScore, AnonymousInvitation
 from .forms import UserLoginForm, RegistrationForm
 from django.forms.models import model_to_dict
 from django.http import FileResponse
@@ -416,6 +416,27 @@ def login_view(request):
         username = form.cleaned_data.get("username")
         password = form.cleaned_data.get("password")
         user = authenticate(username=username, password=password)
+        if not user:
+            invitation = AnonymousInvitation.objects.filter(code=password, user__username=username).first()
+            if invitation:
+                session = CourseSession.objects.filter(invitation_set__contains=invitation)
+                if session and session.ends_at > datatime.now():
+                    return redirect('/expired-session')
+                if session and session.starts_at < datetime.now < session.ends_at:
+                    context = {
+                        'course_name': course_name,
+                        'tag_names': [c_tag.name for c_tag in question.tags.all()] if question else [],
+                        'question': question,
+                        'choices': choices,
+                        'session_score_id': session_score.id if (session_score and not question) else 0,
+                        'session_duration': (active_session.closes_at - active_session.opens_at) / timedelta(minutes=1) if active_session else "",
+                        'session_time_left': (active_session.closes_at - datetime.now(timezone.utc)) / timedelta(minutes=1) if active_session else "",
+                        'session_next': next_session.opens_at if next_session else "",
+                    }
+                    return render(request, 'quiz/play.html', context=context)
+                if session and datetime.now < session.starts_at:
+                    render(request, 'quiz/wait_for_it.html', context=context)
+
         login(request, user)
         return redirect('/user-home')
     return render(request, 'quiz/login.html', {"form": form, "title": title})

@@ -1,20 +1,13 @@
 import random
+from datetime import datetime, timezone
 from django.db import models
+from django.contrib.auth.models import User
 from django.utils.translation import gettext as _
 from model_utils.models import TimeStampedModel
 from quiz import models as quiz_models
 
 
-class AnonymousUser(TimeStampedModel):
-    nickname = models.TextField(_('nickname'), default='', null=True, blank=True)
-    name = models.TextField(_('name'), default='', null=True, blank=True)
-    email = models.TextField(_('Email'), null=True)
-    user_salt = models.TextField(_('Salt'), null=True)
 
-
-class AnonymousInvitation(TimeStampedModel):
-    user = models.ForeignKey(AnonymousUser, on_delete=models.CASCADE)
-    invitation_private_code = models.TextField(_('Private Code'), default='', null=True, blank=True)
 
 class AnonymousCourseSession(TimeStampedModel):
     name = models.TextField(_('Anonymous Session name'), default='', null=True, blank=True)
@@ -22,6 +15,8 @@ class AnonymousCourseSession(TimeStampedModel):
     invitations = models.ManyToManyField(AnonymousInvitation, blank=True)
     opens_at = models.DateTimeField()
     closes_at = models.DateTimeField()
+    exam_topics = models.ManyToManyField(quiz_models.ExamTopic, blank=True)
+    enforce_exam_topics = models.BooleanField(default=False, null=False, blank=True)
     course = models.ForeignKey(quiz_models.Course, null=True, blank=True, on_delete=models.CASCADE)
     tags = models.ManyToManyField(quiz_models.Tag, blank=True)
     max_n_questions = models.IntegerField(blank=True, default=0)
@@ -33,6 +28,8 @@ class AnonymousCourseSession(TimeStampedModel):
         default="CO"
     )
     enforce_expertise_level = models.BooleanField(default=False, null=False, blank=True)
+    enforce_questions_order = models.BooleanField(default=True, null=False, blank=True)
+    session_questions_order = models.TextField(_('Question Text'), default='', null=False, blank=True)
 
     def get_new_question(self, anonymous_user):
         used_questions_pk = quiz_models.AttemptedQuestion.objects.filter(user=anonymous_user, session=self).values_list('question__pk', flat=True)
@@ -53,6 +50,11 @@ class AnonymousCourseSession(TimeStampedModel):
             remaining_questions = quiz_models.Question.objects.filter(**expertise_filter).filter(tags__in=self.tags.all()).exclude(pk__in=used_questions_pk).distinct()
         elif self.questions.all():
             remaining_questions = self.questions.exclude(pk__in=used_questions_pk)
+            if self.enforce_questions_order and self.session_questions_order:
+                for ordered_question in self.session_questions_order.split(","):
+                    for unordered in remaining_questions.all():
+                        if int(ordered_question) == unordered.id:
+                            return unordered
         else:
             remaining_questions = quiz_models.Question.objects.filter(**expertise_filter).exclude(pk__in=used_questions_pk)
 
@@ -68,10 +70,20 @@ class AnonymousCourseSession(TimeStampedModel):
                 expertise_gear.append(remaining_questions.filter(expertise_level=exp_filter))
 
             if self.max_n_questions:
-                position_val = self.max_n_questions // len(expertise_filter["expertise_level__in"])
-                position_index = len(used_questions_pk) // position_val
-                if expertise_gear[position_index].exists():
-                    return random.choice(expertise_gear[position_index])
+                if self.exam_topics.all() and self.enforce_exam_topics:
+                    topic_pos_val = self.max_n_questions // len(self.exam_topics.all())
+                    topic_index = len(used_questions_pk) // topic_pos_val
+                    topic_expertice_pos_val = len(used_questions_pk) % topic_pos_val
+                    topic_expertice_pos_index = topic_pos_val // topic_expertice_pos_val
+                    if expertise_gear[topic_expertice_pos_index].filter(
+                            tags_contains=self.exam_topics.all()[topic_index].tags).exists():
+                        return random.choice(expertise_gear[topic_expertice_pos_index].filter(
+                            tags_contains=self.exam_topics.all()[topic_index].tags))         
+                else:
+                    position_val = self.max_n_questions // len(expertise_filter["expertise_level__in"])
+                    position_index = len(used_questions_pk) // position_val
+                    if expertise_gear[position_index].exists():
+                        return random.choice(expertise_gear[position_index])
             else:
                 position_val = (self.closes_at - self.opens_at) // len(expertise_filter["expertise_level__in"])
                 position_index = (datetime.now(timezone.utc) - self.opens_at) // position_val
@@ -141,7 +153,7 @@ class AnonymousCourseSession(TimeStampedModel):
 
 class AnonymousAttemptedQuestion(TimeStampedModel):
     question = models.ForeignKey(quiz_models.Question, on_delete=models.CASCADE)
-    user = models.ForeignKey(AnonymousUser, on_delete=models.CASCADE, related_name='attempts')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='attempts')
     selected_choices = models.ManyToManyField(quiz_models.Choice, blank=True)
     offered_choices = models.ManyToManyField(quiz_models.Choice, related_name="offered_in_anonymous_attempts", blank=True)
     offered_choices_order = models.TextField(_('Question Text'))
@@ -155,6 +167,6 @@ class AnonymousAttemptedQuestion(TimeStampedModel):
 
 class AnonymousSessionScore(TimeStampedModel):
     course_session = models.ForeignKey(quiz_models.CourseSession, on_delete=models.CASCADE)
-    user = models.ForeignKey(AnonymousUser, on_delete=models.CASCADE)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
     total_score = models.DecimalField(_('Total Score'), default=0, decimal_places=2, max_digits=10)
     is_enabled = models.BooleanField(_('Is this session avalible for the user?'), default=True, null=False)

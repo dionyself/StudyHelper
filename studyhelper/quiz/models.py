@@ -38,6 +38,24 @@ class Course(TimeStampedModel):
         return self.name
 
 
+class ExamTopic(TimeStampedModel):
+    name = models.TextField(_('Course Name'), unique=True)
+    tags = models.ManyToManyField(Tag, blank=True)
+    course = models.ForeignKey(Course, null=True, blank=True, related_name='exam_topics', on_delete=models.CASCADE)
+    
+    def validate_question(self, question):
+        for tag in self.tags:
+            if tag not in question.tags:
+                return False
+        if self.course not in question.courses:
+            return False
+        return True
+
+
+class AnonymousInvitation(TimeStampedModel):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    invitation_private_code = models.TextField(_('Private Code'), default='', null=True, blank=True)
+
 class Question(TimeStampedModel):
     MIN_NUMBER_OF_CORRECT_CHOICES = 1
     MAX_NUMBER_OF_CORRECT_CHOICES = 5
@@ -171,10 +189,13 @@ class QuizProfile(TimeStampedModel):
 
 class CourseSession(TimeStampedModel):
     is_published = models.BooleanField(_('Is this session open?'), default=True, null=False)
+    invitations = models.ManyToManyField(AnonymousInvitation, blank=True)
     users = models.ManyToManyField(User, blank=True)
     opens_at = models.DateTimeField()
     closes_at = models.DateTimeField()
     course = models.ForeignKey(Course, null=True, blank=True, on_delete=models.CASCADE)
+    exam_topics = models.ManyToManyField(ExamTopic, blank=True)
+    enforce_exam_topics = models.BooleanField(default=False, null=False, blank=True)
     tags = models.ManyToManyField(Tag, blank=True)
     max_n_questions = models.IntegerField(blank=True, default=0)
     questions = models.ManyToManyField(Question, blank=True)
@@ -232,12 +253,22 @@ class CourseSession(TimeStampedModel):
                 expertise_gear.append(remaining_questions.filter(expertise_level=exp_filter))
             try:
                 if self.max_n_questions:
-                    position_val = self.max_n_questions // len(expertise_filter["expertise_level__in"])
-                    position_index = len(used_questions_pk) // position_val
-                    if expertise_gear[position_index].exists():
-                        return random.choice(expertise_gear[position_index])
-                    elif expertise_gear[position_index+1].exists():
-                        return random.choice(expertise_gear[position_index+1])
+                    if self.exam_topics.all() and self.enforce_exam_topics:
+                        topic_pos_val = self.max_n_questions // len(self.exam_topics.all())
+                        topic_index = len(used_questions_pk) // topic_pos_val
+                        topic_expertice_pos_val = len(used_questions_pk) % topic_pos_val
+                        topic_expertice_pos_index = topic_pos_val // topic_expertice_pos_val
+                        if expertise_gear[topic_expertice_pos_index].filter(
+                                tags_contains=self.exam_topics.all()[topic_index].tags).exists():
+                            return random.choice(expertise_gear[topic_expertice_pos_index].filter(
+                                tags_contains=self.exam_topics.all()[topic_index].tags))         
+                    else:
+                        position_val = self.max_n_questions // len(expertise_filter["expertise_level__in"])
+                        position_index = len(used_questions_pk) // position_val
+                        if expertise_gear[position_index].exists():
+                            return random.choice(expertise_gear[position_index])
+                        elif expertise_gear[position_index+1].exists():
+                            return random.choice(expertise_gear[position_index+1])
                 else:
                     position_val = (self.closes_at - self.opens_at) // len(expertise_filter["expertise_level__in"])
                     position_index = (datetime.now(timezone.utc) - self.opens_at) // position_val
